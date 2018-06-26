@@ -65,6 +65,12 @@ public class TestAPI {
 			api.debugEnabled = true;
 
 			try {
+				String groupID = "41685931";
+				printArray(Group.show(groupID, api).members);
+				
+				System.exit(0);
+				printArray(Group.index(api));
+				
 				System.out.println(Group.show(Group.index(api)[0].id, api));
 			} catch (GroupMeException e) {
 				// TODO Auto-generated catch block

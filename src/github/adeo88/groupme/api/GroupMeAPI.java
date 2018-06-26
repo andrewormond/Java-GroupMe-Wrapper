@@ -84,7 +84,6 @@ public class GroupMeAPI {
 		}
 
 		throw new GroupMeException("Get Request Error: Code " + responseCode);
-
 	}
 
 }

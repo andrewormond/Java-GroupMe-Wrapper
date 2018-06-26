@@ -12,7 +12,7 @@ public class Group {
 	public String creator_user_id;
 	public long created_at;
 	public long updated_at;
-	// public Member[] members; //TODO: Implement Members
+	public Member[] members;
 	public String share_url;
 	// public Message[] messages; //TODO: Implement Messages
 
@@ -29,6 +29,12 @@ public class Group {
 		created_at = json.getLong("created_at");
 		updated_at = json.getLong("updated_at");
 		// TODO: Set members
+		JSONArray membersJSON = json.getJSONArray("members");
+		members = new Member[membersJSON.length()];
+		for (int i = 0; i < membersJSON.length(); i++) {
+			members[i] = new Member(membersJSON.getJSONObject(0));
+		}
+
 		if (json.has("share_url") && json.get("share_url") != org.json.JSONObject.NULL) {
 			share_url = json.getString("share_url");
 		}
@@ -58,7 +64,8 @@ public class Group {
 	}
 
 	public static Group show(String groupID, GroupMeAPI api) throws GroupMeException {
-		JSONObject json = api.sendGetRequest("https://api.groupme.com/v3/groups/" + groupID, true).getJSONObject("response");
+		JSONObject json = api.sendGetRequest("https://api.groupme.com/v3/groups/" + groupID, true)
+				.getJSONObject("response");
 		return new Group(json);
 	}
 
