@@ -65,7 +65,7 @@ public class TestAPI {
 			api.debugEnabled = true;
 
 			try {
-				printArray(Group.index(api));
+				System.out.println(Group.show(Group.index(api)[0].id, api));
 			} catch (GroupMeException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

@@ -45,6 +45,23 @@ public class Group {
 
 	}
 
+	public static Group[] former(GroupMeAPI api) throws GroupMeException {
+		JSONArray groupsJSON = api.sendGetRequest("https://api.groupme.com/v3/groups/former", true)
+				.getJSONArray("response");
+		Group[] list = new Group[groupsJSON.length()];
+		for (int i = 0; i < groupsJSON.length(); i++) {
+			JSONObject groupObj = groupsJSON.getJSONObject(i);
+			list[i] = new Group(groupObj);
+		}
+		return list;
+
+	}
+
+	public static Group show(String groupID, GroupMeAPI api) throws GroupMeException {
+		JSONObject json = api.sendGetRequest("https://api.groupme.com/v3/groups/" + groupID, true).getJSONObject("response");
+		return new Group(json);
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -52,7 +69,7 @@ public class Group {
 	 */
 	@Override
 	public String toString() {
-		return "Group [id = " + id + ", name = \"" + name + "\", description = \"" + description + "\"]";
+		return "Group [id = " + id + ", name = \"" + name + "\"]";
 	}
 
 }
