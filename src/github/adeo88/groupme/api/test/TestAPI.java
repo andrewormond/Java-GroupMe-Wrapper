@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.Random;
 
 import github.adeo88.groupme.api.Group;
 import github.adeo88.groupme.api.GroupMeAPI;
@@ -66,12 +67,24 @@ public class TestAPI {
 
 			try {
 				String groupID = "41685931";
-				printArray(Group.show(groupID, api).members);
+				Group group = Group.show(groupID, api);
+				System.out.println(group);
+				printArray(group.members);
 				
-				System.exit(0);
-				printArray(Group.index(api));
+				String userID = "55871106";
+				/*
+				System.out.println("Add "+userID+" result: "+group.addMember("Jerry", userID, api));
+				try {
+					Thread.sleep(3000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				System.out.println("Remove "+userID+" result: "+group.removeMember(userID, api));
+				*/
+				String name = "Andrew #"+new Random().nextInt(100);
+				System.out.println("Update name result: "+group.updateNickname(name, api));
 				
-				System.out.println(Group.show(Group.index(api)[0].id, api));
 			} catch (GroupMeException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

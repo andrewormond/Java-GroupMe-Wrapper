@@ -1,6 +1,7 @@
 package github.adeo88.groupme.api;
 
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
@@ -46,6 +47,7 @@ public class GroupMeAPI {
 	}
 
 	public JSONObject sendGetRequest(String url, boolean authenticate) throws GroupMeException {
+		url = "https://api.groupme.com/v3"+url;
 		int responseCode = -1;
 		if (authenticate) {
 			url += "?token=" + token;
@@ -84,6 +86,41 @@ public class GroupMeAPI {
 		}
 
 		throw new GroupMeException("Get Request Error: Code " + responseCode);
+	}
+
+	public int sendPostRequest(String url, String body, boolean authenticate) throws GroupMeException {
+		int responseCode = -1;
+		url = "https://api.groupme.com/v3" + url;
+		if (authenticate) {
+			url += "?token=" + token;
+		}
+		System.out.println("\nSending 'POST' request to URL : " + url);
+		URL obj;
+		try {
+			obj = new URL(url);
+
+			HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
+
+			// add request header
+			con.setRequestMethod("POST");
+			con.setRequestProperty("Content-Type", "application/json");
+
+			// Send post request
+			con.setDoOutput(true);
+			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+			wr.writeBytes(body);
+			System.out.println("Body: " + body);
+			wr.flush();
+			wr.close();
+
+			responseCode = con.getResponseCode();
+			return responseCode;
+		} catch (IOException e) {
+			printEx(e);
+		}
+
+		throw new GroupMeException("Post Request Error: Code " + responseCode);
+
 	}
 
 }
