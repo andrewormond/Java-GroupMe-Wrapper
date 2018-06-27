@@ -1,5 +1,7 @@
 package github.adeo88.groupme.api;
 
+import java.io.PrintStream;
+import java.util.HashMap;
 import java.util.regex.Pattern;
 
 import org.json.JSONArray;
@@ -16,10 +18,34 @@ public class Group {
 	public long updated_at;
 	public Member[] members;
 	public String share_url;
-	// public Message[] messages; //TODO: Implement Messages
+	String last_message_id;
+	String first_message_id;
+	long last_message_created_at;
+	public HashMap<String, Message> messages = new HashMap<>();
 
 	public void setMembers(JSONArray membersJSON) {
 		members = Member.interpretMembers(membersJSON);
+	}
+
+	public void setMessages(JSONObject wrapper) {
+		int count = wrapper.getInt("count");
+		String message_id = wrapper.getString("last_message_id");
+		if (first_message_id == null) {
+			first_message_id = message_id;
+		}
+		if (this.last_message_id == null) {
+			this.last_message_id = first_message_id;
+		}
+		long message_time = wrapper.getLong("last_message_created_at");
+		if (message_time > this.last_message_created_at) {
+			last_message_id = message_id;
+		}
+	}
+
+	public void dumpMessages(PrintStream ps) {
+		for (String key : this.messages.keySet()) {
+			ps.println(messages.get(key));
+		}
 	}
 
 	public Group(JSONObject json) {
@@ -35,10 +61,12 @@ public class Group {
 
 		setMembers(json.getJSONArray("members"));
 
+		setMessages(json.getJSONObject("messages"));
+
 		share_url = GroupMeAPI.ReadJSONStringWithNull(json, "share_url");
 	}
 
-	public static Group[] index(GroupMeAPI api) throws GroupMeException {
+	public static Group[] indexGroups(GroupMeAPI api) throws GroupMeException {
 		JSONArray groupsJSON = api.sendGetRequest("/groups", true).getJSONArray("response");
 		Group[] list = new Group[groupsJSON.length()];
 		for (int i = 0; i < groupsJSON.length(); i++) {
@@ -65,9 +93,10 @@ public class Group {
 		return new Group(json);
 	}
 
-	public void refreshMembers(GroupMeAPI api) throws GroupMeException {
+	public void refresh(GroupMeAPI api) throws GroupMeException {
 		JSONObject json = api.sendGetRequest("/groups/" + group_id, true).getJSONObject("response");
 		setMembers(json.getJSONArray("members"));
+		setMessages(json.getJSONObject("messages"));
 	}
 
 	public Member getMember(String user_id) {
@@ -80,7 +109,7 @@ public class Group {
 	}
 
 	public int removeMember(String user_id, GroupMeAPI api) throws GroupMeException {
-		refreshMembers(api);
+		refresh(api);
 		Member user = getMember(user_id);
 		if (user == null) {
 			throw new GroupMeException("No user found for user_id: " + user_id);
@@ -151,6 +180,15 @@ public class Group {
 		JSONArray membersJSON = api.sendGetRequest("/groups/" + this.group_id + "/members/results/" + resultID, true)
 				.getJSONArray("members");
 		return Member.interpretMembers(membersJSON);
+	}
+
+	// TODO: Implement Parameters
+	public Message[] indexMessages(GroupMeAPI api) throws GroupMeException {
+		JSONObject jsonPackage = api.sendGetRequest("/groups/" + this.group_id + "/messages", true)
+				.getJSONObject("response");
+		Message[] messages = Message.interpretMessages(jsonPackage.getJSONArray("messages"));
+		
+		return messages;
 	}
 
 	@Override

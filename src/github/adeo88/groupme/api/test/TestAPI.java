@@ -71,24 +71,7 @@ public class TestAPI {
 				Group group = Group.show(groupID, api);
 				System.out.println(group);
 				printArray(group.members);
-				
-				String userID = "55871106";
-				/*
-				System.out.println("Add "+userID+" result: "+group.addMember("Jerry", userID, api));
-				try {
-					Thread.sleep(3000);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				System.out.println("Remove "+userID+" result: "+group.removeMember(userID, api));
-				*/
-				/*
-				 * String name = "Andrew #"+new Random().nextInt(100);
-				 * System.out.println("Update name result: "+group.updateNickname(name, api));
-				 */
-				
-				System.out.println("Me result: "+User.Me(api));
+				printArray(group.indexMessages(api));
 				
 			} catch (GroupMeException e) {
 				// TODO Auto-generated catch block
