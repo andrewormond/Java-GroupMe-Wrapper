@@ -122,5 +122,13 @@ public class GroupMeAPI {
 		throw new GroupMeException("Post Request Error: Code " + responseCode);
 
 	}
+	
+	static String ReadJSONStringWithNull(JSONObject json, String key) {
+		if (json.has(key) && json.get(key) != org.json.JSONObject.NULL) {
+			return json.getString(key);
+		}
+		return null;
+	}
+	
 
 }

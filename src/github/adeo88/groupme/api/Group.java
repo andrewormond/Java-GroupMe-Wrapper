@@ -27,10 +27,7 @@ public class Group {
 		name = json.getString("name");
 		type = json.getString("type");
 		description = json.getString("description");
-
-		if (json.has("image_url") && json.get("image_url") != org.json.JSONObject.NULL) {
-			image_url = json.getString("image_url");
-		}
+		image_url = GroupMeAPI.ReadJSONStringWithNull(json, "image_url");
 
 		creator_user_id = json.getString("creator_user_id");
 		created_at = json.getLong("created_at");
@@ -38,9 +35,7 @@ public class Group {
 
 		setMembers(json.getJSONArray("members"));
 
-		if (json.has("share_url") && json.get("share_url") != org.json.JSONObject.NULL) {
-			share_url = json.getString("share_url");
-		}
+		share_url = GroupMeAPI.ReadJSONStringWithNull(json, "share_url");
 	}
 
 	public static Group[] index(GroupMeAPI api) throws GroupMeException {
@@ -153,7 +148,8 @@ public class Group {
 	}
 
 	public Member[] getResults(String resultID, GroupMeAPI api) throws GroupMeException {
-		JSONArray membersJSON = api.sendGetRequest("/groups/"+this.group_id+"/members/results/"+resultID, true).getJSONArray("members");
+		JSONArray membersJSON = api.sendGetRequest("/groups/" + this.group_id + "/members/results/" + resultID, true)
+				.getJSONArray("members");
 		return Member.interpretMembers(membersJSON);
 	}
 

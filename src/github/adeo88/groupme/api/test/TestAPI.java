@@ -9,6 +9,7 @@ import java.util.Random;
 import github.adeo88.groupme.api.Group;
 import github.adeo88.groupme.api.GroupMeAPI;
 import github.adeo88.groupme.api.GroupMeException;
+import github.adeo88.groupme.api.User;
 
 public class TestAPI {
 
@@ -82,8 +83,12 @@ public class TestAPI {
 				}
 				System.out.println("Remove "+userID+" result: "+group.removeMember(userID, api));
 				*/
-				String name = "Andrew #"+new Random().nextInt(100);
-				System.out.println("Update name result: "+group.updateNickname(name, api));
+				/*
+				 * String name = "Andrew #"+new Random().nextInt(100);
+				 * System.out.println("Update name result: "+group.updateNickname(name, api));
+				 */
+				
+				System.out.println("Me result: "+User.Me(api));
 				
 			} catch (GroupMeException e) {
 				// TODO Auto-generated catch block

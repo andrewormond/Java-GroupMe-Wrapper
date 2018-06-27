@@ -24,12 +24,8 @@ public class Member {
 		user_id = json.getString("user_id");
 		nickname = json.getString("nickname");
 		muted = json.getBoolean("muted");
-		if (json.has("image_url") && json.get("image_url") != JSONObject.NULL) {
-			image_url = json.getString("image_url");
-		}
-		if (json.has("id") && json.get("id") != JSONObject.NULL) {
-			member_id = json.getString("id");
-		}
+		image_url = GroupMeAPI.ReadJSONStringWithNull(json, "image_url");
+		member_id = GroupMeAPI.ReadJSONStringWithNull(json, "id");
 
 		// ,"roles":["admin","owner"]
 
