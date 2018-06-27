@@ -19,10 +19,7 @@ public class Group {
 	// public Message[] messages; //TODO: Implement Messages
 
 	public void setMembers(JSONArray membersJSON) {
-		members = new Member[membersJSON.length()];
-		for (int i = 0; i < membersJSON.length(); i++) {
-			members[i] = new Member(membersJSON.getJSONObject(i));
-		}
+		members = Member.interpretMembers(membersJSON);
 	}
 
 	public Group(JSONObject json) {
@@ -58,8 +55,7 @@ public class Group {
 	}
 
 	public static Group[] former(GroupMeAPI api) throws GroupMeException {
-		JSONArray groupsJSON = api.sendGetRequest("/former", true)
-				.getJSONArray("response");
+		JSONArray groupsJSON = api.sendGetRequest("/former", true).getJSONArray("response");
 		Group[] list = new Group[groupsJSON.length()];
 		for (int i = 0; i < groupsJSON.length(); i++) {
 			JSONObject groupObj = groupsJSON.getJSONObject(i);
@@ -70,8 +66,7 @@ public class Group {
 	}
 
 	public static Group show(String groupID, GroupMeAPI api) throws GroupMeException {
-		JSONObject json = api.sendGetRequest("/groups/" + groupID, true)
-				.getJSONObject("response");
+		JSONObject json = api.sendGetRequest("/groups/" + groupID, true).getJSONObject("response");
 		return new Group(json);
 	}
 
@@ -101,8 +96,7 @@ public class Group {
 		JSONObject body = new JSONObject();
 		body.put("membership_id", user.member_id);
 
-		return api.sendPostRequest(
-				"/groups/" + this.group_id + "/members/" + user.member_id + "/remove", "", true);
+		return api.sendPostRequest("/groups/" + this.group_id + "/members/" + user.member_id + "/remove", "", true);
 	}
 
 	public int addMember(JSONObject payload, String guid, GroupMeAPI api) throws GroupMeException {
@@ -115,8 +109,7 @@ public class Group {
 		wrapper.put("members", list);
 		System.out.println(wrapper.toString());
 
-		int resp = api.sendPostRequest("/groups/" + this.group_id + "/members/add",
-				wrapper.toString(), true);
+		int resp = api.sendPostRequest("/groups/" + this.group_id + "/members/add", wrapper.toString(), true);
 		return resp;
 	}
 
@@ -154,9 +147,14 @@ public class Group {
 		memberJSON.put("nickname", new_nickname);
 		JSONObject json = new JSONObject();
 		json.put("membership", memberJSON);
-		
-		return api.sendPostRequest("/groups/"+this.group_id+"/memberships/update", json.toString(), true);
 
+		return api.sendPostRequest("/groups/" + this.group_id + "/memberships/update", json.toString(), true);
+
+	}
+
+	public Member[] getResults(String resultID, GroupMeAPI api) throws GroupMeException {
+		JSONArray membersJSON = api.sendGetRequest("/groups/"+this.group_id+"/members/results/"+resultID, true).getJSONArray("members");
+		return Member.interpretMembers(membersJSON);
 	}
 
 	@Override

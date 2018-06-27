@@ -12,6 +12,14 @@ public class Member {
 	public String member_id;
 	public String[] roles;
 
+	public static Member[] interpretMembers(JSONArray membersJSON) {
+		Member[] members = new Member[membersJSON.length()];
+		for (int i = 0; i < membersJSON.length(); i++) {
+			members[i] = new Member(membersJSON.getJSONObject(i));
+		}
+		return members;
+	}
+
 	public Member(JSONObject json) {
 		user_id = json.getString("user_id");
 		nickname = json.getString("nickname");
