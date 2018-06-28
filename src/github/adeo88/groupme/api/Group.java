@@ -48,11 +48,11 @@ public class Group {
 		}
 	}
 
-	public Group(JSONObject json) {
+	private Group(JSONObject json) {
 		group_id = json.getString("id");
 		name = json.getString("name");
 		type = json.getString("type");
-		description = json.getString("description");
+		description = Utils.jsonReadString(json, "description");
 		image_url = Utils.jsonReadString(json, "image_url");
 
 		creator_user_id = json.getString("creator_user_id");
@@ -60,8 +60,6 @@ public class Group {
 		updated_at = json.getLong("updated_at");
 
 		setMembers(json.getJSONArray("members"));
-
-		setMessages(json.getJSONObject("messages"));
 
 		share_url = Utils.jsonReadString(json, "share_url");
 	}
@@ -181,12 +179,13 @@ public class Group {
 	public Member[] getResults(String resultID, GroupMeAPI api) throws GroupMeException {
 		try {
 			JSONArray membersJSON = api
-					.sendGetRequest("/groups/" + this.group_id + "/members/results/" + resultID, true).getJSONObject("response").getJSONArray("members");
+					.sendGetRequest("/groups/" + this.group_id + "/members/results/" + resultID, true)
+					.getJSONObject("response").getJSONArray("members");
 			return Member.interpretMembers(membersJSON);
 		} catch (GroupMeException e) {
-			if(e.code == 503) {
+			if (e.code == 503) {
 				throw new GroupMeException("Results are not ready yet, try again in a moment", e.code);
-			}else if (e.code == 404) {
+			} else if (e.code == 404) {
 				throw new GroupMeException("Results have expired or id is invalid", e.code);
 			}
 		}
@@ -205,6 +204,34 @@ public class Group {
 	@Override
 	public String toString() {
 		return "Group [group_id = " + group_id + ", name = \"" + name + "\"]";
+	}
+
+	public static Group create(String name, String description, String image_url, boolean share, GroupMeAPI api)
+			throws GroupMeException {
+		if (name == null) {
+			throw new GroupMeException("Name is required", 400);
+		}
+		JSONObject payload = new JSONObject();
+		payload.put("name", name);
+		if (description != null) {
+			payload.put("description", description);
+		}
+		if (image_url != null) {
+			payload.put("image_url", image_url);
+		}
+		if(share) {
+			payload.put("share", true);
+		}
+		JSONObject response = api.sendPostRequest("/groups", payload.toString(), true);
+		//Group Create Response: {"meta":{"code":201},"response":{"creator_user_id":"20623362","max_memberships":500,"image_url":null,"description":null,"created_at":1530212666,"type":"private","share_qr_code_url":null,"updated_at":1530212666,"group_id":"41753289","share_url":null,"members":[{"user_id":"20623362","image_url":"http://i.groupme.com/748x750.jpeg.f45ba9bb6ee745d3a678240e8dc94ec3","autokicked":false,"roles":["admin","owner"],"nickname":"Andrew Ormond","id":"349788274","muted":false}],"name":"Test: 641","max_members":500,"messages":{"preview":{"attachments":[],"image_url":null,"nickname":null,"text":null},"last_message_id":null,"count":0,"last_message_created_at":null},"phone_number":"+1 3182667490","office_mode":false,"id":"41753289"}}
+		if(Utils.responseToCode(response) == 201) {
+			return new Group(response.getJSONObject("response"));
+		}
+		return null;
+	}
+	
+	public static int destroy(String groupID, GroupMeAPI api) throws GroupMeException {
+		return Utils.responseToCode(api.sendPostRequest("/groups/"+groupID+"/destroy", null, true));
 	}
 
 }

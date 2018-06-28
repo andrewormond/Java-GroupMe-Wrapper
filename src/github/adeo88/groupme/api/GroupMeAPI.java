@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.regex.Matcher;
@@ -30,6 +31,26 @@ public class GroupMeAPI {
 		if (this.debugEnabled) {
 			e.printStackTrace();
 		}
+	}
+
+	public void printSep(String title, PrintStream ps) {
+		if (this.debugEnabled) {
+			int n = 300 - title.length();
+			for (int i = 0; i < n / 2; i++) {
+				ps.print('-');
+			}
+
+			ps.print(title);
+
+			for (int i = 0; i < n / 2; i++) {
+				ps.print('-');
+			}
+			ps.println();
+		}
+	}
+
+	public void printSep(PrintStream ps) {
+		printSep("", ps);
 	}
 
 	public void setToken(String token) {
@@ -75,10 +96,12 @@ public class GroupMeAPI {
 			}
 
 			responseCode = con.getResponseCode();
-			println("Sent 'GET' request to URL : " + url + " with response code: " + responseCode);
-			this.println("Body: " + body);
-			
-			if(responseCode < 200 || responseCode >= 300) {
+			this.printSep("Sent 'GET' request to URL : " + url + " with response code: " + responseCode, System.out);
+			if (body != null) {
+				this.println("Body: " + body);
+			}
+
+			if (responseCode < 200 || responseCode >= 300) {
 				throw new GroupMeException("Get Request Error: Code " + responseCode, responseCode);
 			}
 
@@ -97,6 +120,7 @@ public class GroupMeAPI {
 			}
 			JSONObject jobj = new JSONObject(mtch.group(0));
 			println(jobj);
+			this.printSep(System.out);
 			return jobj;
 
 		} catch (MalformedURLException e) {
@@ -125,20 +149,22 @@ public class GroupMeAPI {
 			con.setRequestMethod("POST");
 			con.setRequestProperty("Content-Type", "application/json");
 
-			// Send post request
-			con.setDoOutput(true);
-			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-			wr.writeBytes(body);
-			System.out.println("Body: " + body);
-			wr.flush();
-			wr.close();
+			if (body != null) {
+				// Send post request
+				con.setDoOutput(true);
+				DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+				wr.writeBytes(body);
+				wr.flush();
+				wr.close();
+				this.println("Body: " + body);
+			}
 
 			responseCode = con.getResponseCode();
 
-			if(responseCode < 200 || responseCode >= 300) {
+			if (responseCode < 200 || responseCode >= 300) {
 				throw new GroupMeException("Post Request Error: Code " + responseCode, responseCode);
 			}
-			
+
 			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
 			String inputLine;
 			StringBuffer response = new StringBuffer();
@@ -150,7 +176,15 @@ public class GroupMeAPI {
 
 			Matcher mtch = JSONPattern.matcher(response);
 			if (!mtch.find()) {
-				throw new GroupMeException("Could not find json", responseCode);
+				if (responseCode >= 200 && responseCode < 300) {
+					JSONObject out = new JSONObject();
+					JSONObject meta = new JSONObject();
+					meta.put("code", responseCode);
+					out.put("meta", meta);
+					meta.put("response", JSONObject.NULL);
+					return out;
+				}
+				throw new GroupMeException("[" + responseCode + "] Could not find json in:" + response, responseCode);
 			}
 			JSONObject jobj = new JSONObject(mtch.group(0));
 
@@ -162,6 +196,5 @@ public class GroupMeAPI {
 		throw new GroupMeException("Post Request Error: Code " + responseCode, responseCode);
 
 	}
-
 
 }

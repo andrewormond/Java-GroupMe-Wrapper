@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Random;
+import java.util.Scanner;
 
 import org.json.JSONObject;
 
@@ -72,28 +73,14 @@ public class TestAPI {
 			try {
 				String groupID = "41685931";
 				String userID = "55871106";
-				Group group = Group.show(groupID, api);
-				System.out.println(group);
-				printArray(group.members);
-				System.out.println("Remove: " + group.removeMember(userID, api));
-				Thread.sleep(250);
-				String result_id = group.addMember("Jerry", userID, api);
-				System.out.println("resultID: " + result_id);
 
-				int i = 1;
-				Member[] results = null;
-				do {
-					try {
-						System.out.println("Result Attempt #" + i++);
-						Thread.sleep(100);
-						results = group.getResults(result_id, api);
-					} catch (GroupMeException e) {
-
-					}
-				} while (results == null);
-
-				TestAPI.printArray(results);
-				// printArray(group.indexMessages(api));
+				Group createdGroup = Group.create("Test: " + new Random().nextInt(999), null, null, false, api);
+				System.out.println("Created: " + createdGroup);
+				System.out.println("Delete: " + Group.show(createdGroup.group_id, api)+"?: (yes/no)");
+				Scanner console = new Scanner(System.in);
+				if (console.nextLine().contains("yes")) {
+					Group.destroy(createdGroup.group_id, api);
+				}
 
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
