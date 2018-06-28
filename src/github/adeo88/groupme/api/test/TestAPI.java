@@ -9,15 +9,17 @@ import java.util.Scanner;
 
 import org.json.JSONObject;
 
+import github.adeo88.groupme.api.DirectMessage;
 import github.adeo88.groupme.api.Group;
 import github.adeo88.groupme.api.GroupMeAPI;
 import github.adeo88.groupme.api.GroupMeException;
 import github.adeo88.groupme.api.Member;
+import github.adeo88.groupme.api.Message;
 import github.adeo88.groupme.api.User;
 
 public class TestAPI {
 
-	public static int DIVL = 60;
+	public static int DIVL = 100;
 
 	public static String loadKey(String filename) throws IOException {
 		BufferedReader in = new BufferedReader(new FileReader(filename));
@@ -63,7 +65,9 @@ public class TestAPI {
 	}
 
 	public static void main(String[] args) {
-		System.out.println("Starting API Test");
+		printSep("Starting API Test", System.out);
+		System.out.println();
+
 		GroupMeAPI api;
 		try {
 
@@ -74,13 +78,9 @@ public class TestAPI {
 				String groupID = "41685931";
 				String userID = "55871106";
 
-				Group createdGroup = Group.create("Test: " + new Random().nextInt(999), null, null, false, api);
-				System.out.println("Created: " + createdGroup);
-				System.out.println("Delete: " + Group.show(createdGroup.group_id, api)+"?: (yes/no)");
-				Scanner console = new Scanner(System.in);
-				if (console.nextLine().contains("yes")) {
-					Group.destroy(createdGroup.group_id, api);
-				}
+				Group group = Group.show(groupID, api);
+				System.out.println(group);
+				System.out.println("Sent: "+DirectMessage.sendDirectMessage(userID, "test "+new Random().nextLong(), ""+new Random().nextInt(), null, api));
 
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -92,7 +92,8 @@ public class TestAPI {
 			System.exit(-1);
 		}
 
-		System.out.println("Ending API Test");
+		System.out.println();
+		printSep("Ending API Test", System.out);
 	}
 
 }

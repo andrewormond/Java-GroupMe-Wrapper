@@ -194,8 +194,9 @@ public class Group {
 
 	// TODO: Implement Parameters
 	public Message[] indexMessages(GroupMeAPI api) throws GroupMeException {
-		JSONObject jsonPackage = api.sendGetRequest("/groups/" + this.group_id + "/messages", true)
-				.getJSONObject("response");
+		String url = "/groups/" + this.group_id + "/messages";
+		// url +="?limit=30";
+		JSONObject jsonPackage = api.sendGetRequest(url, true).getJSONObject("response");
 		Message[] messages = Message.interpretMessages(jsonPackage.getJSONArray("messages"));
 
 		return messages;
@@ -219,19 +220,32 @@ public class Group {
 		if (image_url != null) {
 			payload.put("image_url", image_url);
 		}
-		if(share) {
+		if (share) {
 			payload.put("share", true);
 		}
 		JSONObject response = api.sendPostRequest("/groups", payload.toString(), true);
-		//Group Create Response: {"meta":{"code":201},"response":{"creator_user_id":"20623362","max_memberships":500,"image_url":null,"description":null,"created_at":1530212666,"type":"private","share_qr_code_url":null,"updated_at":1530212666,"group_id":"41753289","share_url":null,"members":[{"user_id":"20623362","image_url":"http://i.groupme.com/748x750.jpeg.f45ba9bb6ee745d3a678240e8dc94ec3","autokicked":false,"roles":["admin","owner"],"nickname":"Andrew Ormond","id":"349788274","muted":false}],"name":"Test: 641","max_members":500,"messages":{"preview":{"attachments":[],"image_url":null,"nickname":null,"text":null},"last_message_id":null,"count":0,"last_message_created_at":null},"phone_number":"+1 3182667490","office_mode":false,"id":"41753289"}}
-		if(Utils.responseToCode(response) == 201) {
+		if (Utils.responseToCode(response) == 201) {
 			return new Group(response.getJSONObject("response"));
 		}
 		return null;
 	}
-	
+
 	public static int destroy(String groupID, GroupMeAPI api) throws GroupMeException {
-		return Utils.responseToCode(api.sendPostRequest("/groups/"+groupID+"/destroy", null, true));
+		return Utils.responseToCode(api.sendPostRequest("/groups/" + groupID + "/destroy", null, true));
+	}
+
+	public Message createMessage(String text, String source_guid, JSONArray attachments, GroupMeAPI api)
+			throws GroupMeException {
+		JSONObject json = new JSONObject();
+		json.put("text", text);
+		json.put("source_guid", source_guid);
+		if (attachments != null) {
+			json.put("attachments", attachments);
+		}
+		JSONObject payload = new JSONObject();
+		payload.put("message", json);
+		JSONObject response = api.sendPostRequest("/groups/" + this.group_id + "/messages", payload.toString(), true);
+		return new Message(response.getJSONObject("response").getJSONObject("message"));
 	}
 
 }

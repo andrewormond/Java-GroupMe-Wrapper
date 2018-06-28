@@ -35,7 +35,7 @@ public class GroupMeAPI {
 
 	public void printSep(String title, PrintStream ps) {
 		if (this.debugEnabled) {
-			int n = 300 - title.length();
+			int n = 100 - title.length();
 			for (int i = 0; i < n / 2; i++) {
 				ps.print('-');
 			}
@@ -73,6 +73,7 @@ public class GroupMeAPI {
 
 	public JSONObject sendGetRequest(String url, String body, boolean authenticate) throws GroupMeException {
 		url = "https://api.groupme.com/v3" + url;
+		printSep("Get Request to "+url, System.out);
 		int responseCode = -1;
 		if (authenticate) {
 			url += "?token=" + token;
@@ -96,7 +97,7 @@ public class GroupMeAPI {
 			}
 
 			responseCode = con.getResponseCode();
-			this.printSep("Sent 'GET' request to URL : " + url + " with response code: " + responseCode, System.out);
+			this.println("'GET' Response code: " + responseCode);
 			if (body != null) {
 				this.println("Body: " + body);
 			}
