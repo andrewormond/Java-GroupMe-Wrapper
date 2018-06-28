@@ -53,7 +53,7 @@ public class Group {
 		name = json.getString("name");
 		type = json.getString("type");
 		description = json.getString("description");
-		image_url = GroupMeAPI.ReadJSONStringWithNull(json, "image_url");
+		image_url = Utils.jsonReadString(json, "image_url");
 
 		creator_user_id = json.getString("creator_user_id");
 		created_at = json.getLong("created_at");
@@ -63,7 +63,7 @@ public class Group {
 
 		setMessages(json.getJSONObject("messages"));
 
-		share_url = GroupMeAPI.ReadJSONStringWithNull(json, "share_url");
+		share_url = Utils.jsonReadString(json, "share_url");
 	}
 
 	public static Group[] indexGroups(GroupMeAPI api) throws GroupMeException {
@@ -112,18 +112,19 @@ public class Group {
 		refresh(api);
 		Member user = getMember(user_id);
 		if (user == null) {
-			throw new GroupMeException("No user found for user_id: " + user_id);
+			throw new GroupMeException("No user found for user_id: " + user_id, 404);
 		} else if (user.member_id == null) {
-			throw new GroupMeException("User found for user_id: " + user_id + ", but no member_id found");
+			throw new GroupMeException("User found for user_id: " + user_id + ", but no member_id found", 404);
 		}
 
 		JSONObject body = new JSONObject();
 		body.put("membership_id", user.member_id);
 
-		return api.sendPostRequest("/groups/" + this.group_id + "/members/" + user.member_id + "/remove", "", true);
+		return Utils.responseToCode(
+				api.sendPostRequest("/groups/" + this.group_id + "/members/" + user.member_id + "/remove", "", true));
 	}
 
-	public int addMember(JSONObject payload, String guid, GroupMeAPI api) throws GroupMeException {
+	public String addMember(JSONObject payload, String guid, GroupMeAPI api) throws GroupMeException {
 		JSONArray list = new JSONArray();
 		if (guid != null) {
 			payload.put("guid", guid);
@@ -131,15 +132,15 @@ public class Group {
 		list.put(payload);
 		JSONObject wrapper = new JSONObject();
 		wrapper.put("members", list);
-		System.out.println(wrapper.toString());
 
-		int resp = api.sendPostRequest("/groups/" + this.group_id + "/members/add", wrapper.toString(), true);
-		return resp;
+		JSONObject response = Utils.jsonReadJSOBObject(
+				api.sendPostRequest("/groups/" + this.group_id + "/members/add", wrapper.toString(), true), "response");
+		return Utils.jsonReadString(response, "results_id");
 	}
 
 	private final Pattern emailPattern = Pattern.compile(".*\\@.*\\..*");
 
-	public int addMember(String nickname, String user_id_or_email, String guid, GroupMeAPI api)
+	public String addMember(String nickname, String user_id_or_email, String guid, GroupMeAPI api)
 			throws GroupMeException {
 		JSONObject userObj = new JSONObject();
 		userObj.put("nickname", nickname);
@@ -151,18 +152,18 @@ public class Group {
 		return addMember(userObj, guid, api);
 	}
 
-	public int addMember(String nickname, String user_id_or_email, GroupMeAPI api) throws GroupMeException {
+	public String addMember(String nickname, String user_id_or_email, GroupMeAPI api) throws GroupMeException {
 		return addMember(nickname, user_id_or_email, null, api);
 	}
 
-	public int addMember(String nickname, long phone_number, String guid, GroupMeAPI api) throws GroupMeException {
+	public String addMember(String nickname, long phone_number, String guid, GroupMeAPI api) throws GroupMeException {
 		JSONObject userObj = new JSONObject();
 		userObj.put("nickname", nickname);
 		userObj.put("phone_number", "" + phone_number);
 		return addMember(userObj, guid, api);
 	}
 
-	public int addMember(String nickname, long phone_number, GroupMeAPI api) throws GroupMeException {
+	public String addMember(String nickname, long phone_number, GroupMeAPI api) throws GroupMeException {
 		return addMember(nickname, phone_number, null, api);
 	}
 
@@ -172,14 +173,24 @@ public class Group {
 		JSONObject json = new JSONObject();
 		json.put("membership", memberJSON);
 
-		return api.sendPostRequest("/groups/" + this.group_id + "/memberships/update", json.toString(), true);
+		return Utils.responseToCode(
+				api.sendPostRequest("/groups/" + this.group_id + "/memberships/update", json.toString(), true));
 
 	}
 
 	public Member[] getResults(String resultID, GroupMeAPI api) throws GroupMeException {
-		JSONArray membersJSON = api.sendGetRequest("/groups/" + this.group_id + "/members/results/" + resultID, true)
-				.getJSONArray("members");
-		return Member.interpretMembers(membersJSON);
+		try {
+			JSONArray membersJSON = api
+					.sendGetRequest("/groups/" + this.group_id + "/members/results/" + resultID, true).getJSONObject("response").getJSONArray("members");
+			return Member.interpretMembers(membersJSON);
+		} catch (GroupMeException e) {
+			if(e.code == 503) {
+				throw new GroupMeException("Results are not ready yet, try again in a moment", e.code);
+			}else if (e.code == 404) {
+				throw new GroupMeException("Results have expired or id is invalid", e.code);
+			}
+		}
+		return null;
 	}
 
 	// TODO: Implement Parameters
@@ -187,7 +198,7 @@ public class Group {
 		JSONObject jsonPackage = api.sendGetRequest("/groups/" + this.group_id + "/messages", true)
 				.getJSONObject("response");
 		Message[] messages = Message.interpretMessages(jsonPackage.getJSONArray("messages"));
-		
+
 		return messages;
 	}
 

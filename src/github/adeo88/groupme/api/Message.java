@@ -1,7 +1,5 @@
 package github.adeo88.groupme.api;
 
-import java.util.Iterator;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -23,18 +21,18 @@ public class Message {
 
 	public Message(JSONObject json) {
 		//TODO: Load "attachments" array
-		source_guid = GroupMeAPI.ReadJSONStringWithNull(json, "source_guid");
-		sender_type = GroupMeAPI.ReadJSONStringWithNull(json, "sender_type");
+		source_guid = Utils.jsonReadString(json, "source_guid");
+		sender_type = Utils.jsonReadString(json, "sender_type");
 		created_at = json.getLong("created_at");
-		sender_id = GroupMeAPI.ReadJSONStringWithNull(json, "sender_id");
+		sender_id = Utils.jsonReadString(json, "sender_id");
 		system = json.getBoolean("system");
-		avatar_url = GroupMeAPI.ReadJSONStringWithNull(json, "avatar_url");
+		avatar_url = Utils.jsonReadString(json, "avatar_url");
 		//favorited_by = GroupMeAPI.ReadJSONStringWithNull(json, "");
-		group_id = GroupMeAPI.ReadJSONStringWithNull(json, "group_id");
-		user_id = GroupMeAPI.ReadJSONStringWithNull(json, "user_id");
-		name = GroupMeAPI.ReadJSONStringWithNull(json, "name");
-		id = GroupMeAPI.ReadJSONStringWithNull(json, "id");
-		text = GroupMeAPI.ReadJSONStringWithNull(json, "text");
+		group_id = Utils.jsonReadString(json, "group_id");
+		user_id = Utils.jsonReadString(json, "user_id");
+		name = Utils.jsonReadString(json, "name");
+		id = Utils.jsonReadString(json, "id");
+		text = Utils.jsonReadString(json, "text");
 	}
 
 	public static Message[] interpretMessages(JSONArray jsonArray) {

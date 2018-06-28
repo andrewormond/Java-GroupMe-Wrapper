@@ -6,9 +6,12 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Random;
 
+import org.json.JSONObject;
+
 import github.adeo88.groupme.api.Group;
 import github.adeo88.groupme.api.GroupMeAPI;
 import github.adeo88.groupme.api.GroupMeException;
+import github.adeo88.groupme.api.Member;
 import github.adeo88.groupme.api.User;
 
 public class TestAPI {
@@ -48,7 +51,7 @@ public class TestAPI {
 		} else {
 			className = objects.getClass().getSimpleName();
 		}
-		printSep(className, System.out);
+		printSep(String.format("%s [%d]", className, objects.length), System.out);
 		for (int i = 0; i < objects.length; i++) {
 			System.out.println(objects[i]);
 		}
@@ -68,12 +71,31 @@ public class TestAPI {
 
 			try {
 				String groupID = "41685931";
+				String userID = "55871106";
 				Group group = Group.show(groupID, api);
 				System.out.println(group);
 				printArray(group.members);
-				printArray(group.indexMessages(api));
-				
-			} catch (GroupMeException e) {
+				System.out.println("Remove: " + group.removeMember(userID, api));
+				Thread.sleep(250);
+				String result_id = group.addMember("Jerry", userID, api);
+				System.out.println("resultID: " + result_id);
+
+				int i = 1;
+				Member[] results = null;
+				do {
+					try {
+						System.out.println("Result Attempt #" + i++);
+						Thread.sleep(100);
+						results = group.getResults(result_id, api);
+					} catch (GroupMeException e) {
+
+					}
+				} while (results == null);
+
+				TestAPI.printArray(results);
+				// printArray(group.indexMessages(api));
+
+			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}

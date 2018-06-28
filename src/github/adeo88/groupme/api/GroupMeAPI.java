@@ -47,7 +47,11 @@ public class GroupMeAPI {
 	}
 
 	public JSONObject sendGetRequest(String url, boolean authenticate) throws GroupMeException {
-		url = "https://api.groupme.com/v3"+url;
+		return sendGetRequest(url, null, authenticate);
+	}
+
+	public JSONObject sendGetRequest(String url, String body, boolean authenticate) throws GroupMeException {
+		url = "https://api.groupme.com/v3" + url;
 		int responseCode = -1;
 		if (authenticate) {
 			url += "?token=" + token;
@@ -60,8 +64,23 @@ public class GroupMeAPI {
 			con.setRequestMethod("GET");
 			con.setRequestProperty("User-Agent", USER_AGENT);
 
+			if (body != null) {
+				// Send Get request w/ Body
+				con.setRequestProperty("Content-Type", "application/json");
+				con.setDoOutput(true);
+				DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+				wr.writeBytes(body);
+				wr.flush();
+				wr.close();
+			}
+
 			responseCode = con.getResponseCode();
 			println("Sent 'GET' request to URL : " + url + " with response code: " + responseCode);
+			this.println("Body: " + body);
+			
+			if(responseCode < 200 || responseCode >= 300) {
+				throw new GroupMeException("Get Request Error: Code " + responseCode, responseCode);
+			}
 
 			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
 			String inputLine;
@@ -74,9 +93,10 @@ public class GroupMeAPI {
 
 			Matcher mtch = JSONPattern.matcher(response);
 			if (!mtch.find()) {
-				throw new GroupMeException("Could not find json");
+				throw new GroupMeException("Could not find json", 404);
 			}
 			JSONObject jobj = new JSONObject(mtch.group(0));
+			println(jobj);
 			return jobj;
 
 		} catch (MalformedURLException e) {
@@ -85,10 +105,10 @@ public class GroupMeAPI {
 			printEx(e);
 		}
 
-		throw new GroupMeException("Get Request Error: Code " + responseCode);
+		throw new GroupMeException("Get Request Error: Code " + responseCode, responseCode);
 	}
 
-	public int sendPostRequest(String url, String body, boolean authenticate) throws GroupMeException {
+	public JSONObject sendPostRequest(String url, String body, boolean authenticate) throws GroupMeException {
 		int responseCode = -1;
 		url = "https://api.groupme.com/v3" + url;
 		if (authenticate) {
@@ -114,21 +134,34 @@ public class GroupMeAPI {
 			wr.close();
 
 			responseCode = con.getResponseCode();
-			return responseCode;
+
+			if(responseCode < 200 || responseCode >= 300) {
+				throw new GroupMeException("Post Request Error: Code " + responseCode, responseCode);
+			}
+			
+			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			String inputLine;
+			StringBuffer response = new StringBuffer();
+
+			while ((inputLine = in.readLine()) != null) {
+				response.append(inputLine);
+			}
+			in.close();
+
+			Matcher mtch = JSONPattern.matcher(response);
+			if (!mtch.find()) {
+				throw new GroupMeException("Could not find json", responseCode);
+			}
+			JSONObject jobj = new JSONObject(mtch.group(0));
+
+			return jobj;
 		} catch (IOException e) {
 			printEx(e);
 		}
 
-		throw new GroupMeException("Post Request Error: Code " + responseCode);
+		throw new GroupMeException("Post Request Error: Code " + responseCode, responseCode);
 
 	}
-	
-	static String ReadJSONStringWithNull(JSONObject json, String key) {
-		if (json.has(key) && json.get(key) != org.json.JSONObject.NULL) {
-			return json.getString(key);
-		}
-		return null;
-	}
-	
+
 
 }

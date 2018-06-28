@@ -13,12 +13,12 @@ public class User {
 
 	private User(JSONObject json) {
 
-		user_id = GroupMeAPI.ReadJSONStringWithNull(json, "id");
-		phone_number = GroupMeAPI.ReadJSONStringWithNull(json, "phone_number");
-		image_url = GroupMeAPI.ReadJSONStringWithNull(json, "image_url");
+		user_id = Utils.jsonReadString(json, "id");
+		phone_number = Utils.jsonReadString(json, "phone_number");
+		image_url = Utils.jsonReadString(json, "image_url");
 		created_at = json.getLong("created_at");
 		updated_at = json.getLong("updated_at");
-		email = GroupMeAPI.ReadJSONStringWithNull(json, "email");
+		email = Utils.jsonReadString(json, "email");
 		sms = json.getBoolean("sms");
 	}
 
@@ -54,7 +54,7 @@ public class User {
 			payload.put("zip_code", zip_code);
 		}
 
-		return api.sendPostRequest("/users/update", payload.toString(), true);
+		return Utils.responseToCode(api.sendPostRequest("/users/update", payload.toString(), true));
 	}
 
 }
