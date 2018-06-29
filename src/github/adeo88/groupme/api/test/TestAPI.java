@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.Optional;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -49,8 +50,10 @@ public class TestAPI {
 
 	public static void printArray(Object[] objects) {
 		String className;
-		if (objects.length > 0) {
+		if (objects != null && objects.length > 0) {
 			className = objects[0].getClass().getSimpleName();
+		} else if (objects == null) {
+			return;
 		} else {
 			className = objects.getClass().getSimpleName();
 		}
@@ -80,7 +83,8 @@ public class TestAPI {
 
 				Group group = Group.show(groupID, api);
 				System.out.println(group);
-				System.out.println("Sent: "+DirectMessage.sendDirectMessage(userID, "test "+new Random().nextLong(), ""+new Random().nextInt(), null, api));
+				Message[] messages = DirectMessage.index(userID, api);
+				printArray(messages);
 
 			} catch (Exception e) {
 				// TODO Auto-generated catch block

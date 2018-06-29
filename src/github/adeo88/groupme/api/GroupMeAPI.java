@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -64,20 +65,39 @@ public class GroupMeAPI {
 
 	@Override
 	public String toString() {
-		return "GroupMeAPI [token=" + token + "]";
+		return "GroupMeAPI";
 	}
 
 	public JSONObject sendGetRequest(String url, boolean authenticate) throws GroupMeException {
-		return sendGetRequest(url, null, authenticate);
+		return sendGetRequest(url, null, new HashMap<>(), authenticate);
 	}
 
 	public JSONObject sendGetRequest(String url, String body, boolean authenticate) throws GroupMeException {
+		return sendGetRequest(url, body, new HashMap<>(), authenticate);
+	}
+
+	public JSONObject sendGetRequest(String url, HashMap<String, String> parameters, boolean authenticate)
+			throws GroupMeException {
+		return sendGetRequest(url, null, parameters, authenticate);
+	}
+
+	public JSONObject sendGetRequest(String url, String body, HashMap<String, String> parameters, boolean authenticate)
+			throws GroupMeException {
 		url = "https://api.groupme.com/v3" + url;
-		printSep("Get Request to "+url, System.out);
 		int responseCode = -1;
 		if (authenticate) {
-			url += "?token=" + token;
+			parameters.put("token", token);
 		}
+		int i = 0;
+		for (String key : parameters.keySet()) {
+			if (i++ == 0) {
+				url += "?";
+			} else {
+				url += "&";
+			}
+			url += key + "=" + parameters.get(key);
+		}
+		printSep("Get Request to " + url, System.out);
 		try {
 			URL obj = new URL(url);
 			HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
@@ -103,7 +123,9 @@ public class GroupMeAPI {
 			}
 
 			if (responseCode < 200 || responseCode >= 300) {
-				throw new GroupMeException("Get Request Error: Code " + responseCode, responseCode);
+				throw new GroupMeException(
+						"Get Request Error to " + url + "\n" + con.getResponseMessage() + ": Code " + responseCode,
+						responseCode);
 			}
 
 			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));

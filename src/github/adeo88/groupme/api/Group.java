@@ -2,6 +2,7 @@ package github.adeo88.groupme.api;
 
 import java.io.PrintStream;
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 import org.json.JSONArray;
@@ -192,11 +193,28 @@ public class Group {
 		return null;
 	}
 
-	// TODO: Implement Parameters
 	public Message[] indexMessages(GroupMeAPI api) throws GroupMeException {
+		return indexMessages(Optional.empty(), Optional.empty(), Optional.empty(), api);
+	}
+
+	public Message[] indexMessages(int limit, GroupMeAPI api) throws GroupMeException {
+		return indexMessages(Optional.of(limit), Optional.empty(), Optional.empty(), api);
+	}
+
+	public Message[] indexMessages(Optional<Integer> limit, Optional<String> before_id, Optional<String> since_id,
+			GroupMeAPI api) throws GroupMeException {
 		String url = "/groups/" + this.group_id + "/messages";
-		// url +="?limit=30";
-		JSONObject jsonPackage = api.sendGetRequest(url, true).getJSONObject("response");
+		HashMap<String, String> parameters = new HashMap<>();
+		if (limit.isPresent()) {
+			parameters.put("limit", "" + limit.get());
+		}
+		if(before_id.isPresent()) {
+			parameters.put("before_id", before_id.get());
+		}
+		if(since_id.isPresent()) {
+			parameters.put("since_id", since_id.get());
+		}
+		JSONObject jsonPackage = api.sendGetRequest(url, parameters, true).getJSONObject("response");
 		Message[] messages = Message.interpretMessages(jsonPackage.getJSONArray("messages"));
 
 		return messages;

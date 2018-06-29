@@ -98,4 +98,18 @@ public class Message {
 				+ this.attachments.length + " attachments and " + this.favorited_by.length + " likes]";
 	}
 
+	protected String getConversationID() {
+		return this.group_id;
+	}
+
+	public int like(GroupMeAPI api) throws GroupMeException {
+		return Utils.responseToCode(
+				api.sendPostRequest("/messages/" + this.getConversationID() + "/" + this.id + "/like", "", true));
+	}
+	
+	public int unlike(GroupMeAPI api) throws GroupMeException {
+		return Utils.responseToCode(
+				api.sendPostRequest("/messages/" + this.getConversationID() + "/" + this.id + "/unlike", "", true));
+	}
+
 }
