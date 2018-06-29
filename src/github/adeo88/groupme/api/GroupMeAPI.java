@@ -220,4 +220,17 @@ public class GroupMeAPI {
 
 	}
 
+	public int enableSMS(int hours_enabled, boolean suppress) throws GroupMeException {
+		JSONObject payload = new JSONObject();
+		payload.put("duration", hours_enabled);
+		if (suppress) {
+			payload.put("registration_id", token);
+		}
+		return Utils.responseToCode(this.sendPostRequest("/users/sms_mode", payload.toString(), true));
+	}
+
+	public int disableSMS() throws GroupMeException {
+		return Utils.responseToCode(this.sendPostRequest("/users/sms_mode/delete", "", true));
+	}
+
 }

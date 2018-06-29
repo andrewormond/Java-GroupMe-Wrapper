@@ -86,6 +86,10 @@ public class TestAPI {
 				Group group = Group.show(groupID, api);
 				System.out.println(group);
 
+				System.out.println("enable: " + api.enableSMS(1, true));
+				Thread.sleep(2000);
+				System.out.println("disable: " + api.disableSMS());
+
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
