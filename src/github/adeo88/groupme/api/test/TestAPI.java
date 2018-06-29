@@ -10,6 +10,7 @@ import java.util.Scanner;
 
 import org.json.JSONObject;
 
+import github.adeo88.groupme.api.Block;
 import github.adeo88.groupme.api.DirectMessage;
 import github.adeo88.groupme.api.Group;
 import github.adeo88.groupme.api.Group.TimePeriod;
@@ -86,9 +87,13 @@ public class TestAPI {
 				Group group = Group.show(groupID, api);
 				System.out.println(group);
 
-				System.out.println("enable: " + api.enableSMS(1, true));
-				Thread.sleep(2000);
-				System.out.println("disable: " + api.disableSMS());
+				System.out.println("block: " + Block.createBlock(userID, api));
+				Thread.sleep(1000);
+				System.out.println("Block exists? " + Block.isBlocked(userID, api));
+				Thread.sleep(1000);
+				System.out.println("unblock: " + Block.unblock(userID, api));
+				Thread.sleep(1000);
+				System.out.println("Block exists? " + Block.isBlocked(userID, api));
 
 			} catch (Exception e) {
 				// TODO Auto-generated catch block

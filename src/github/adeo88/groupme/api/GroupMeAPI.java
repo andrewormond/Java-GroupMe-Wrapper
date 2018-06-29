@@ -156,10 +156,24 @@ public class GroupMeAPI {
 	}
 
 	public JSONObject sendPostRequest(String url, String body, boolean authenticate) throws GroupMeException {
+		return this.sendPostRequest(url, new HashMap<>(), body, authenticate);
+	}
+
+	public JSONObject sendPostRequest(String url, HashMap<String, String> parameters, String body, boolean authenticate)
+			throws GroupMeException {
 		int responseCode = -1;
 		url = "https://api.groupme.com/v3" + url;
 		if (authenticate) {
-			url += "?token=" + token;
+			parameters.put("token", token);
+		}
+		int i = 0;
+		for (String key : parameters.keySet()) {
+			if (i++ == 0) {
+				url += "?";
+			} else {
+				url += "&";
+			}
+			url += key + "=" + parameters.get(key);
 		}
 		System.out.println("\nSending 'POST' request to URL : " + url);
 		URL obj;
