@@ -90,6 +90,7 @@ public class TestAPI {
 				System.out.println("block: " + Block.createBlock(userID, api));
 				Thread.sleep(1000);
 				System.out.println("Block exists? " + Block.isBlocked(userID, api));
+				printArray(Block.getBlocks(api));
 				Thread.sleep(1000);
 				System.out.println("unblock: " + Block.unblock(userID, api));
 				Thread.sleep(1000);

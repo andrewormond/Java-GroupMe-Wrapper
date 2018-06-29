@@ -2,12 +2,13 @@ package github.adeo88.groupme.api;
 
 import java.util.HashMap;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class Block {
 	public String user_id;
 	public String blocked_user_id;
-	public long created_at = -1;
+	public long created_at = -1; // For whatever reason, the v3 API refuses to include this (deprecated?)
 
 	private Block(JSONObject json) {
 		System.out.println(json);
@@ -64,6 +65,24 @@ public class Block {
 		parameters.put("otherUser", otherUser);
 		parameters.put("user", user_id);
 		return api.sendGetRequest("/blocks/between", parameters, true).getJSONObject("response").getBoolean("between");
+	}
+
+	public static Block[] interpretBlocks(JSONArray jsonArray) {
+		if (jsonArray == null) {
+			return new Block[0];
+		}
+		Block[] blocks = new Block[jsonArray.length()];
+		for (int i = 0; i < jsonArray.length(); i++) {
+			blocks[i] = new Block(jsonArray.getJSONObject(i));
+		}
+		return blocks;
+	}
+
+	public static Block[] getBlocks(GroupMeAPI api) throws GroupMeException {
+		HashMap<String, String> parameters = new HashMap<>();
+		parameters.put("user", User.Me(api).user_id);
+		return Block.interpretBlocks(
+				api.sendGetRequest("/blocks", parameters, true).getJSONObject("response").getJSONArray("blocks"));
 	}
 
 }
