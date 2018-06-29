@@ -9,6 +9,10 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class Group {
+	public enum TimePeriod {
+		day, week, month
+	}
+
 	public String group_id;
 	public String name;
 	public String type;
@@ -208,10 +212,10 @@ public class Group {
 		if (limit.isPresent()) {
 			parameters.put("limit", "" + limit.get());
 		}
-		if(before_id.isPresent()) {
+		if (before_id.isPresent()) {
 			parameters.put("before_id", before_id.get());
 		}
-		if(since_id.isPresent()) {
+		if (since_id.isPresent()) {
 			parameters.put("since_id", since_id.get());
 		}
 		JSONObject jsonPackage = api.sendGetRequest(url, parameters, true).getJSONObject("response");
@@ -264,6 +268,34 @@ public class Group {
 		payload.put("message", json);
 		JSONObject response = api.sendPostRequest("/groups/" + this.group_id + "/messages", payload.toString(), true);
 		return new Message(response.getJSONObject("response").getJSONObject("message"));
+	}
+
+	public Message[] getLeaderboard(TimePeriod time, GroupMeAPI api) throws GroupMeException {
+		HashMap<String, String> parameters = new HashMap<>();
+		parameters.put("period", time.toString());
+
+		JSONObject jsonPackage = api.sendGetRequest("/groups/" + this.group_id + "/likes", parameters, true)
+				.getJSONObject("response");
+		Message[] messages = Message.interpretMessages(jsonPackage.getJSONArray("messages"));
+
+		return messages;
+	}
+	
+
+	public Message[] getMyLikes(GroupMeAPI api) throws GroupMeException {
+		JSONObject jsonPackage = api.sendGetRequest("/groups/" + this.group_id + "/likes/mine", true)
+				.getJSONObject("response");
+		Message[] messages = Message.interpretMessages(jsonPackage.getJSONArray("messages"));
+
+		return messages;
+	}
+
+	public Message[] getMyHits(GroupMeAPI api) throws GroupMeException {
+		JSONObject jsonPackage = api.sendGetRequest("/groups/" + this.group_id + "/likes/for_me", true)
+				.getJSONObject("response");
+		Message[] messages = Message.interpretMessages(jsonPackage.getJSONArray("messages"));
+
+		return messages;
 	}
 
 }

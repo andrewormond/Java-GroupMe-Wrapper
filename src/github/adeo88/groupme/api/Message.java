@@ -6,7 +6,7 @@ import org.json.JSONObject;
 public class Message {
 
 	public enum AttachmentType {
-		image, location, split, emoji
+		image, location, split, emoji, mentions, poll
 	}
 
 	public static class Attachment {

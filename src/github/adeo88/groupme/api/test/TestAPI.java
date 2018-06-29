@@ -12,6 +12,7 @@ import org.json.JSONObject;
 
 import github.adeo88.groupme.api.DirectMessage;
 import github.adeo88.groupme.api.Group;
+import github.adeo88.groupme.api.Group.TimePeriod;
 import github.adeo88.groupme.api.GroupMeAPI;
 import github.adeo88.groupme.api.GroupMeException;
 import github.adeo88.groupme.api.Member;
@@ -78,13 +79,12 @@ public class TestAPI {
 			api.debugEnabled = true;
 
 			try {
-				String groupID = "41685931";
-				String userID = "55871106";
+				String groupID = "41685931"; // Jerry test groupme
+				String userID = "55871106"; // Testy
+				// String groupID = "40814221"; // summer squad
 
 				Group group = Group.show(groupID, api);
 				System.out.println(group);
-				Message[] messages = DirectMessage.index(userID, api);
-				printArray(messages);
 
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
