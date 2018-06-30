@@ -175,7 +175,7 @@ public class GroupMeAPI {
 			}
 			url += key + "=" + parameters.get(key);
 		}
-		System.out.println("\nSending 'POST' request to URL : " + url);
+		println("\nSending 'POST' request to URL : " + url);
 		URL obj;
 		try {
 			obj = new URL(url);

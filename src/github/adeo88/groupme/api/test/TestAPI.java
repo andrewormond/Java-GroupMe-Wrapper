@@ -79,7 +79,9 @@ public class TestAPI {
 		try {
 
 			api = new GroupMeAPI(loadKey("token.txt"));
-			api.debugEnabled = true;
+			api.debugEnabled = false;
+
+			GroupMeAPI testAPI = new GroupMeAPI(loadKey("token2.txt"));
 
 			try {
 				String groupID = "41685931"; // Jerry test groupme
@@ -87,17 +89,16 @@ public class TestAPI {
 				// String groupID = "40814221"; // summer squad
 				String botID = "23d4bc9f075ae54ad8efeda2c3";
 
-				Group group = Group.show(groupID, api);
-				System.out.println(group);
+				Group group = Group.create("tmp", "", "", true, testAPI);
+				printArray(Group.indexGroups(testAPI));
 
-				Bot b = Bot.get(botID, api);
-				System.out.println(b);
-				System.out.println(b.postMessage("test picture", Optional.of("https://imagesvc.timeincapp.com/v3/mm/image?url=https%3A%2F%2Fpeopledotcom.files.wordpress.com%2F2018%2F04%2Floki_the_sphynx-01_1.jpg%3Fw%3D1800&w=1800&q=70"), api));
-
-				// Utils.downloadImage("https://i.redd.it/z94mwla6aeuz.jpg", "cat");
-				// System.out.println("Bot Result: "+ Bot.create("Tester2", groupID,
-				// Optional.empty(), Optional.empty(), Optional.empty(), api));
-				// System.out.println("Uploaded image to: "+Utils.uploadImage("cat.jpg"));
+				Thread.sleep(1000);
+				System.out.println(group.getShareToken());
+				Thread.sleep(1000);
+				
+				printSep("Cleaning up", System.out);
+				group.destroy(testAPI);
+				printArray(Group.indexGroups(testAPI));
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

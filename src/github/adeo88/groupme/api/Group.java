@@ -3,6 +3,7 @@ package github.adeo88.groupme.api;
 import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Optional;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.json.JSONArray;
@@ -252,8 +253,8 @@ public class Group {
 		return null;
 	}
 
-	public static int destroy(String groupID, GroupMeAPI api) throws GroupMeException {
-		return Utils.responseToCode(api.sendPostRequest("/groups/" + groupID + "/destroy", null, true));
+	public int destroy(GroupMeAPI api) throws GroupMeException {
+		return Utils.responseToCode(api.sendPostRequest("/groups/" + this.group_id + "/destroy", null, true));
 	}
 
 	public Message createMessage(String text, String source_guid, JSONArray attachments, GroupMeAPI api)
@@ -280,7 +281,6 @@ public class Group {
 
 		return messages;
 	}
-	
 
 	public Message[] getMyLikes(GroupMeAPI api) throws GroupMeException {
 		JSONObject jsonPackage = api.sendGetRequest("/groups/" + this.group_id + "/likes/mine", true)
@@ -296,6 +296,24 @@ public class Group {
 		Message[] messages = Message.interpretMessages(jsonPackage.getJSONArray("messages"));
 
 		return messages;
+	}
+
+	public Group join(String group_id, GroupMeAPI api) throws GroupMeException {
+		return null;
+	}
+
+	private final Pattern sharePattern = Pattern.compile(".*/(\\w+)\\b");
+
+	public String getShareToken() {
+		if (this.share_url == null) {
+			return null;
+		}
+		Matcher m = sharePattern.matcher(this.share_url.trim());
+		if (m.matches()) {
+			return m.group(1);
+		} else {
+			return null;
+		}
 	}
 
 }
