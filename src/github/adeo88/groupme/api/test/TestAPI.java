@@ -11,6 +11,7 @@ import java.util.Scanner;
 import org.json.JSONObject;
 
 import github.adeo88.groupme.api.Block;
+import github.adeo88.groupme.api.Bot;
 import github.adeo88.groupme.api.DirectMessage;
 import github.adeo88.groupme.api.Group;
 import github.adeo88.groupme.api.Group.TimePeriod;
@@ -87,15 +88,14 @@ public class TestAPI {
 				Group group = Group.show(groupID, api);
 				System.out.println(group);
 
-				System.out.println("block: " + Block.createBlock(userID, api));
-				Thread.sleep(1000);
-				System.out.println("Block exists? " + Block.isBlocked(userID, api));
-				printArray(Block.getBlocks(api));
-				Thread.sleep(1000);
-				System.out.println("unblock: " + Block.unblock(userID, api));
-				Thread.sleep(1000);
-				System.out.println("Block exists? " + Block.isBlocked(userID, api));
-
+				String botID = "281ed8c55b453ac6027e85b617";
+				String message = new Random().nextDouble()+"";
+				Bot bot = Bot.get(botID, api);
+				System.out.println(bot);
+				System.out.println(bot.postMessage(message, Optional.empty(), api));
+				bot.destroy(api);
+				//System.out.println("Bot Result: "+ Bot.create("Tester2", groupID, Optional.empty(), Optional.empty(), Optional.empty(), api));
+				
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
