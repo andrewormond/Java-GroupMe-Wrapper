@@ -82,6 +82,7 @@ public class TestAPI {
 			api.debugEnabled = false;
 
 			GroupMeAPI testAPI = new GroupMeAPI(loadKey("token2.txt"));
+			testAPI.debugEnabled = true;
 
 			try {
 				String groupID = "41685931"; // Jerry test groupme
@@ -93,7 +94,7 @@ public class TestAPI {
 				printArray(Group.indexGroups(testAPI));
 
 				Thread.sleep(1000);
-				System.out.println(group.getShareToken());
+				System.out.println("Joined: "+Group.join(group.share_url, testAPI));
 				Thread.sleep(1000);
 				
 				printSep("Cleaning up", System.out);

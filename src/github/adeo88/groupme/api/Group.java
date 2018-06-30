@@ -298,21 +298,19 @@ public class Group {
 		return messages;
 	}
 
-	public Group join(String group_id, GroupMeAPI api) throws GroupMeException {
-		return null;
-	}
+	private static final Pattern sharePattern = Pattern.compile(".*/(\\w+)/(\\w+)\\b");
 
-	private final Pattern sharePattern = Pattern.compile(".*/(\\w+)\\b");
-
-	public String getShareToken() {
-		if (this.share_url == null) {
-			return null;
-		}
-		Matcher m = sharePattern.matcher(this.share_url.trim());
+	public static Group join(String share_url, GroupMeAPI api) throws GroupMeException {
+		Matcher m = sharePattern.matcher(share_url.trim());
 		if (m.matches()) {
-			return m.group(1);
+			String group_id = m.group(1);
+			String share_token = m.group(2);
+			System.out.println("group: " + group_id + " share_token: " + share_token);
+			JSONObject response = api.sendPostRequest("/groups/" + group_id + "/join/" + share_token, "", true);
+
+			return new Group(response.getJSONObject("response").getJSONObject("group"));
 		} else {
-			return null;
+			throw new GroupMeException("Bad Share URL: " + share_url, 400);
 		}
 	}
 
