@@ -90,16 +90,12 @@ public class TestAPI {
 				// String groupID = "40814221"; // summer squad
 				String botID = "23d4bc9f075ae54ad8efeda2c3";
 
-				Group group = Group.create("tmp", "", "", true, testAPI);
-				printArray(Group.indexGroups(testAPI));
-
-				Thread.sleep(1000);
-				System.out.println("Joined: "+Group.join(group.share_url, testAPI));
-				Thread.sleep(1000);
+				Group group = Group.show(groupID, api);
+				System.out.println(group);
 				
-				printSep("Cleaning up", System.out);
-				group.destroy(testAPI);
-				printArray(Group.indexGroups(testAPI));
+				group.changeOwner(User.Me(api).user_id, testAPI);
+				
+
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

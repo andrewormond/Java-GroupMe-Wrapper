@@ -82,7 +82,7 @@ public class Group {
 	}
 
 	public static Group[] former(GroupMeAPI api) throws GroupMeException {
-		JSONArray groupsJSON = api.sendGetRequest("/former", true).getJSONArray("response");
+		JSONArray groupsJSON = api.sendGetRequest("/groups/former", true).getJSONArray("response");
 		Group[] list = new Group[groupsJSON.length()];
 		for (int i = 0; i < groupsJSON.length(); i++) {
 			JSONObject groupObj = groupsJSON.getJSONObject(i);
@@ -311,6 +311,45 @@ public class Group {
 			return new Group(response.getJSONObject("response").getJSONObject("group"));
 		} else {
 			throw new GroupMeException("Bad Share URL: " + share_url, 400);
+		}
+	}
+
+	public Group rejoin(GroupMeAPI api) throws GroupMeException {
+		return Group.rejoin(this.group_id, api);
+	}
+
+	public static Group rejoin(String group_id, GroupMeAPI api) throws GroupMeException {
+		HashMap<String, String> parameters = new HashMap<>();
+		parameters.put("group_id", group_id);
+		JSONObject response = api.sendPostRequest("/groups/join", parameters, "", true);
+		return new Group(response.getJSONObject("response"));
+	}
+
+	public void changeOwner(String owner_id, GroupMeAPI api) throws GroupMeException {
+		JSONObject jobj = new JSONObject();
+		jobj.put("group_id", this.group_id);
+		jobj.put("owner_id", owner_id);
+		JSONArray requests = new JSONArray();
+		requests.put(jobj);
+		JSONObject payload = new JSONObject();
+		payload.put("requests", requests);
+		JSONObject response = api.sendPostRequest("/groups/change_owners", payload.toString(), true);
+		System.out.println(response);
+		
+		int code = response.getJSONObject("response").getJSONArray("results").getJSONObject(0).getInt("status");
+		switch (code) {
+		case 200:
+			return;
+		case 400:
+			throw new GroupMeException("Already owner", code);
+		case 403:
+			throw new GroupMeException("Requester not owner", code);
+		case 404:
+			throw new GroupMeException("group or new owner not found or new owner is not member of the group", code);
+		case 405:
+			throw new GroupMeException("request object is missing required field or any of the required fields is not an ID", code);
+		default:
+			throw new GroupMeException("Unkown Code: "+code, code);
 		}
 	}
 
