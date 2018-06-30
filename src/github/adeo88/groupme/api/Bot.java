@@ -51,11 +51,7 @@ public class Bot {
 		payload.put("text", text);
 		if (picture_url.isPresent()) {
 			String url = picture_url.get();
-			if (url.startsWith("https://i.groupme.com/")) {
-				payload.put("picture_url", url);
-			} else {
-				throw new GroupMeException("Picture URL needs to be uploaded through the image API (" + url + ")", 400);
-			}
+			payload.put("picture_url", url);
 		}
 
 		return Utils.responseToCode(api.sendPostRequest("/bots/post", payload.toString(), false));

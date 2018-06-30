@@ -20,6 +20,7 @@ import github.adeo88.groupme.api.GroupMeException;
 import github.adeo88.groupme.api.Member;
 import github.adeo88.groupme.api.Message;
 import github.adeo88.groupme.api.User;
+import github.adeo88.groupme.api.Utils;
 
 public class TestAPI {
 
@@ -84,18 +85,19 @@ public class TestAPI {
 				String groupID = "41685931"; // Jerry test groupme
 				String userID = "55871106"; // Testy
 				// String groupID = "40814221"; // summer squad
+				String botID = "23d4bc9f075ae54ad8efeda2c3";
 
 				Group group = Group.show(groupID, api);
 				System.out.println(group);
 
-				String botID = "281ed8c55b453ac6027e85b617";
-				String message = new Random().nextDouble()+"";
-				Bot bot = Bot.get(botID, api);
-				System.out.println(bot);
-				System.out.println(bot.postMessage(message, Optional.empty(), api));
-				bot.destroy(api);
-				//System.out.println("Bot Result: "+ Bot.create("Tester2", groupID, Optional.empty(), Optional.empty(), Optional.empty(), api));
-				
+				Bot b = Bot.get(botID, api);
+				System.out.println(b);
+				System.out.println(b.postMessage("test picture", Optional.of("https://imagesvc.timeincapp.com/v3/mm/image?url=https%3A%2F%2Fpeopledotcom.files.wordpress.com%2F2018%2F04%2Floki_the_sphynx-01_1.jpg%3Fw%3D1800&w=1800&q=70"), api));
+
+				// Utils.downloadImage("https://i.redd.it/z94mwla6aeuz.jpg", "cat");
+				// System.out.println("Bot Result: "+ Bot.create("Tester2", groupID,
+				// Optional.empty(), Optional.empty(), Optional.empty(), api));
+				// System.out.println("Uploaded image to: "+Utils.uploadImage("cat.jpg"));
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
