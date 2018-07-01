@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="javadoc">
+    <target name="javadoc">
+        <javadoc access="public" author="true" classpath="libs/json-20180130.jar" destdir="docs" nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar="false" notree="false" source="1.8" sourcefiles="src/github/adeo88/groupme/api/User.java" sourcepath="src" splitindex="true" use="true" version="true">
+            <link href="jar:platform:/resource/Java-GroupMe-Wrapper/libs/json-20180130-javadoc.jar!/"/>
+        </javadoc>
+    </target>
+</project>
