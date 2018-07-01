@@ -5,8 +5,8 @@ import java.util.Optional;
 import org.json.JSONObject;
 
 /**
- * A <code>User</code> contains information about the user on a global scale in
- * the <code>GroupMeAPI</code>.
+ * A User contains information about the user on a global scale in the
+ * GroupMeAPI.
  * 
  * @author adeo8
  *
@@ -15,50 +15,47 @@ import org.json.JSONObject;
 public class User {
 
 	/**
-	 * The <code>user_id</code> of this <code>User</code>. Should always be present.
+	 * The user_id of this User. Should always be present.
 	 */
 	public String user_id;
 
 	/**
-	 * The phone number associated with this <code>User</code>. May be
-	 * <code>null</code>.
+	 * The phone number associated with this User. May be null.
 	 */
 	public String phone_number;
 
 	/**
-	 * The URL for this <code>User</code>'s Avatar. May be <code>null</code> if user
-	 * has not set an Avatar yet.
+	 * The URL for this User's Avatar. May be null if user has not set an Avatar
+	 * yet.
 	 */
 	public String image_url;
 
 	/**
-	 * Time this <code>User</code> was originally created in the Unix epoch format,
-	 * which is the number of seconds since January 1, 1970 in the UTC (GMT)
-	 * timezone.
+	 * Time this User was originally created in the Unix epoch format, which is the
+	 * number of seconds since January 1, 1970 in the UTC (GMT) timezone.
 	 */
 	public long created_at;
 
 	/**
-	 * Time this <code>User</code> was last updated in the Unix epoch format, which
-	 * is the number of seconds since January 1, 1970 in the UTC (GMT) timezone.
+	 * Time this User was last updated in the Unix epoch format, which is the number
+	 * of seconds since January 1, 1970 in the UTC (GMT) timezone.
 	 */
 	public long updated_at;
 
 	/**
-	 * The email address associated with this <code>User</code>. May be
-	 * <code>null</code>.
+	 * The email address associated with this User. May be null.
 	 */
 	public String email;
 
 	/**
-	 * Flag indicating whether this <code>User</code> is in sms mode.
+	 * Flag indicating whether this User is in sms mode.
 	 */
 	public boolean sms;
 
 	/**
-	 * Constructs the <code>User</code> object from a <code>JSONObject</code>.
+	 * Constructs the User object from a JSONObject.
 	 * 
-	 * @param <code>JSONObject</code>
+	 * @param JSONObject
 	 *            to interpret.
 	 */
 	private User(JSONObject json) {
@@ -73,12 +70,11 @@ public class User {
 	}
 
 	/**
-	 * Constructs a <code>User</code> associated with the application token in the
-	 * <code>GroupMeAPI</code>.
+	 * Constructs a User associated with the application token in the GroupMeAPI.
 	 * 
 	 * @param api
-	 *            The <code>GroupMeAPI<code> to use.
-	 * @return <code>User</code> corresponding to this api's token.
+	 *            The GroupMeAPI to use.
+	 * @return User corresponding to this api's token.
 	 * @throws GroupMeException
 	 *             When there is a JSON error or Networking error.
 	 */
@@ -100,9 +96,10 @@ public class User {
 	 * @param zip_code
 	 *            Optional string representing the zip code
 	 * @param api
-	 *            <code>GroupMeAPI</code> containing the token of the required user.
+	 *            GroupMeAPI containing the token of the required user.
 	 * @return HTTP status code returned from the server (200: OK)
 	 * @throws GroupMeException
+	 *             When there is a JSON error or Networking error.
 	 */
 	public static int update(Optional<String> avatar_url, Optional<String> name, Optional<String> email,
 			Optional<String> zip_code, GroupMeAPI api) throws GroupMeException {
@@ -128,9 +125,9 @@ public class User {
 	}
 
 	/**
-	 * Turns this <code>User</code> into a readable string.
+	 * Turns this User into a readable string.
 	 * 
-	 * @return A <code>String</code> representation of this <code>User</code>.
+	 * @return A String representation of this User.
 	 */
 	@Override
 	public String toString() {

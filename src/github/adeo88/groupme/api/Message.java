@@ -9,32 +9,6 @@ public class Message {
 		image, location, split, emoji, mentions, poll
 	}
 
-	public static class Attachment {
-		public final AttachmentType type;
-		public JSONObject data;
-
-		public Attachment(AttachmentType type, JSONObject data) {
-			this.type = type;
-			this.data = data;
-		}
-
-		public Attachment(JSONObject json) {
-			type = AttachmentType.valueOf(json.getString("type"));
-			this.data = json;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see java.lang.Object#toString()
-		 */
-		@Override
-		public String toString() {
-			return "Attachment [type=" + type + ", data=" + data + "]";
-		}
-
-	}
-
 	public Attachment[] attachments;
 	public String source_guid;
 	public String sender_type;
