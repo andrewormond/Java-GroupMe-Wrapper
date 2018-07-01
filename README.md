@@ -5,4 +5,4 @@ JavaDoc: https://andrewormond.github.io/Java-GroupMe-Wrapper/
 
 Trello Link: https://trello.com/b/uh7LSr93
 
-TODO: Thank org.json authors
+*Uses MIT License*
