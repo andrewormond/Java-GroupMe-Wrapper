@@ -8,7 +8,7 @@ Trello Link: https://trello.com/b/uh7LSr93
 
 ## Examples
 
-###Simple Echo Bot
+##### Simple Echo Bot
 Uses the BotManager service to quote all messages it recieves in the group
 ```java
 String token = "your applicationToken"
