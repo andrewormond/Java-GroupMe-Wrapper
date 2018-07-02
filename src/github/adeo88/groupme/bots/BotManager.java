@@ -31,7 +31,21 @@ public class BotManager implements Runnable {
 		this.bot = bot;
 		listener.setBot(bot);
 	}
+	
+	public void refreshBot(String bot_id, GroupMeAPI api)  throws GroupMeException {
+		this.bot = Bot.get(bot_id, api);
+	}
+	
+	public void refreshBot(Bot bot, GroupMeAPI api)  throws GroupMeException {
+		refreshBot(bot.bot_id, api);
+	}
+	
+	public void refreshBot(GroupMeAPI api)  throws GroupMeException {
+		refreshBot(bot, api);
+	}
 
+	private BotManager() {}
+	
 	public BotManager(Bot bot, int port, BotListener listener) {
 		this.port = port;
 		this.listener = listener;

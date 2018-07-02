@@ -16,9 +16,9 @@ public class EchoBotListener implements BotListener {
 
 	@Override
 	public void onMessage(int handlerID, Message message) {
-		System.out.printf("[%d]: Recieved %s", handlerID, message.toString());
+		System.out.printf("[%d]: Recieved %s\n", handlerID, message.toString());
 		String response = message.name + " said: \"" + message.text + "\"";
-		System.out.printf("[%d]: Sending %s", handlerID, response);
+		System.out.printf("[%d]: Sending %s\n", handlerID, response);
 		try {
 			bot.postMessage(response, Optional.empty());
 		} catch (GroupMeException e) {

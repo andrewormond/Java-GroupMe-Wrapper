@@ -98,13 +98,14 @@ public class TestAPI {
 				manThread.start();
 				
 				Thread.sleep(1000);
-				for(int i = 0; i < 1; i++) {
+				for(int i = 0; i < 3; i++) {
 					group.createMessage("Test: "+i, new Random().nextLong()+"", null, api);
-					Thread.sleep(1500);
+					Thread.sleep(1000);
 				}
 				
-				Thread.sleep(10000);
+				Thread.sleep(1500);
 				manager.stop();
+				manThread.join();
 				
 			} catch (Exception e) {
 				// TODO Auto-generated catch block

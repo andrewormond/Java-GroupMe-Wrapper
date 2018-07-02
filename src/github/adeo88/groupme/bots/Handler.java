@@ -64,7 +64,6 @@ public class Handler implements Runnable {
 
 	@Override
 	public void run() {
-		System.out.println("Started client #" + ID);
 		try {
 			// read request
 			String line;
