@@ -16,45 +16,11 @@ import org.json.JSONObject;
 
 public class GroupMeAPI {
 
-	private String token;
-	private final String USER_AGENT = "Mozilla/5.0";
+	String token;
 	public boolean debugEnabled = false;
-
-	public void println(Object obj) {
-		if (this.debugEnabled) {
-			System.out.println(obj);
-		}
-	}
-
-	public void printEx(Exception e) {
-		if (this.debugEnabled) {
-			e.printStackTrace();
-		}
-	}
-
-	public void printSep(String title, PrintStream ps) {
-		if (this.debugEnabled) {
-			int n = 100 - title.length();
-			for (int i = 0; i < n / 2; i++) {
-				ps.print('-');
-			}
-
-			ps.print(title);
-
-			for (int i = 0; i < n / 2; i++) {
-				ps.print('-');
-			}
-			ps.println();
-		}
-	}
-
-	public void printSep(PrintStream ps) {
-		printSep("", ps);
-	}
 
 	public void setToken(String token) {
 		this.token = token;
-		println("Set token to: " + token);
 	}
 
 	public GroupMeAPI(String token) {
@@ -99,19 +65,6 @@ public class GroupMeAPI {
 			parameters.put("token", token);
 		}
 		return Utils.sendPostRequest(url, parameters, body);
-	}
-
-	public int enableSMS(int hours_enabled, boolean suppress) throws GroupMeException {
-		JSONObject payload = new JSONObject();
-		payload.put("duration", hours_enabled);
-		if (suppress) {
-			payload.put("registration_id", token);
-		}
-		return Utils.responseToCode(this.sendPostRequest("/users/sms_mode", payload.toString(), true));
-	}
-
-	public int disableSMS() throws GroupMeException {
-		return Utils.responseToCode(this.sendPostRequest("/users/sms_mode/delete", "", true));
 	}
 
 }
