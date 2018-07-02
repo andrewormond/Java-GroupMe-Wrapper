@@ -43,6 +43,9 @@ public class Handler implements Runnable {
 		if (mtch.find()) {
 			JSONObject jobj = new JSONObject(mtch.group(0));
 			Message m = new Message(jobj);
+			if(m.name.trim().equals(listener.getBot().name)) {
+				return;
+			}
 			listener.onMessage(ID, m);
 		} else {
 			System.err.println("Could find no JSON data in packet");

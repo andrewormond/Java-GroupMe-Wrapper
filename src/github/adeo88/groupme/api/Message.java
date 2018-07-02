@@ -130,7 +130,7 @@ public class Message {
 	 */
 	@Override
 	public String toString() {
-		return "Message [\"" + this.text + "\", created by: \"" + this.name + "\" in group: " + this.group_id + " with "
+		return "Message [\"" + this.text + "\", created by: \"" + this.name + "\":"+this.sender_id+" in group: " + this.group_id + " with "
 				+ this.attachments.length + " attachments and " + this.favorited_by.length + " likes]";
 	}
 

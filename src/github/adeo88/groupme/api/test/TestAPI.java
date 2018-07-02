@@ -103,7 +103,7 @@ public class TestAPI {
 					Thread.sleep(1500);
 				}
 				
-				Thread.sleep(1500);
+				Thread.sleep(10000);
 				manager.stop();
 				
 			} catch (Exception e) {

@@ -26,11 +26,16 @@ public class BotManager implements Runnable {
 	private volatile boolean running;
 	public BotListener listener;
 	public boolean isDebug = false;
+	
+	public void setBot(Bot bot) {
+		this.bot = bot;
+		listener.setBot(bot);
+	}
 
 	public BotManager(Bot bot, int port, BotListener listener) {
-		this.bot = bot;
 		this.port = port;
 		this.listener = listener;
+		setBot(bot);
 	}
 
 	public BotManager(String bot_id, int port, GroupMeAPI api, BotListener listener) throws GroupMeException {

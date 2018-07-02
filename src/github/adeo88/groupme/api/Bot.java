@@ -44,7 +44,7 @@ public class Bot {
 		return new Bot(response.getJSONObject("response").getJSONObject("bot"));
 	}
 
-	public int postMessage(String text, Optional<String> picture_url, GroupMeAPI api) throws GroupMeException {
+	public int postMessage(String text, Optional<String> picture_url) throws GroupMeException {
 		JSONObject payload = new JSONObject();
 		payload.put("bot_id", this.bot_id);
 		payload.put("text", text);
@@ -53,7 +53,8 @@ public class Bot {
 			payload.put("picture_url", url);
 		}
 
-		return Utils.responseToCode(api.sendPostRequest("/bots/post", payload.toString(), false));
+		String url = "https://api.groupme.com/v3/bots/post";
+		return Utils.responseToCode(Utils.sendPostRequest(url, null, payload.toString()));
 
 	}
 
