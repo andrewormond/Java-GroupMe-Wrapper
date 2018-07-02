@@ -20,6 +20,8 @@ import org.json.JSONObject;
 
 public class Utils {
 
+	public static final Pattern JSONPattern = Pattern.compile("(\\{.*\\})");
+
 	private Utils() {
 	}
 

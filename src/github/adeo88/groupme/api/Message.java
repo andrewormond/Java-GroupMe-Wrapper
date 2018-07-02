@@ -94,7 +94,11 @@ public class Message {
 		sender_id = Utils.jsonReadString(json, "sender_id");
 		system = json.has("system") ? json.getBoolean("system") : false;
 		avatar_url = Utils.jsonReadString(json, "avatar_url");
-		this.favorited_by = Utils.interpretStrings(json.getJSONArray("favorited_by"));
+		if (json.has("favorited_by")) {
+			this.favorited_by = Utils.interpretStrings(json.getJSONArray("favorited_by"));
+		}else {
+			this.favorited_by = new String[0];
+		}
 		group_id = Utils.jsonReadString(json, "group_id");
 		user_id = Utils.jsonReadString(json, "user_id");
 		name = Utils.jsonReadString(json, "name");

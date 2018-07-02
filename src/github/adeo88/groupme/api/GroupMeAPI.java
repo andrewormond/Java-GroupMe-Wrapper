@@ -9,7 +9,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -19,7 +18,6 @@ public class GroupMeAPI {
 
 	private String token;
 	private final String USER_AGENT = "Mozilla/5.0";
-	private final Pattern JSONPattern = Pattern.compile("(\\{.*\\})");
 	public boolean debugEnabled = false;
 
 	public void println(Object obj) {
@@ -137,7 +135,7 @@ public class GroupMeAPI {
 			}
 			in.close();
 
-			Matcher mtch = JSONPattern.matcher(response);
+			Matcher mtch = Utils.JSONPattern.matcher(response);
 			if (!mtch.find()) {
 				throw new GroupMeException("Could not find json", 404);
 			}
@@ -211,7 +209,7 @@ public class GroupMeAPI {
 			}
 			in.close();
 
-			Matcher mtch = JSONPattern.matcher(response);
+			Matcher mtch = Utils.JSONPattern.matcher(response);
 			if (!mtch.find()) {
 				if (responseCode >= 200 && responseCode < 300) {
 					JSONObject out = new JSONObject();

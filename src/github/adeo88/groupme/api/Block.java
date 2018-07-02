@@ -10,7 +10,7 @@ public class Block {
 	public String blocked_user_id;
 	public long created_at = -1; // For whatever reason, the v3 API refuses to include this (deprecated?)
 
-	private Block(JSONObject json) {
+	public Block(JSONObject json) {
 		System.out.println(json);
 		user_id = json.getString("user_id");
 		this.blocked_user_id = json.getString("blocked_user_id");

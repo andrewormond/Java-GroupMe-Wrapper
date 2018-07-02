@@ -56,7 +56,7 @@ public class Member {
 	 * @param json
 	 *            JSONObject to interpret
 	 */
-	private Member(JSONObject json) {
+	public Member(JSONObject json) {
 		user_id = json.getString("user_id");
 		nickname = json.getString("nickname");
 		muted = json.getBoolean("muted");
@@ -71,7 +71,7 @@ public class Member {
 			}
 		}
 	}
-	
+
 	/**
 	 * Interprets a JSONArray of members and converts them into a Member Array.
 	 * 

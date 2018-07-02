@@ -58,7 +58,7 @@ public class User {
 	 * @param JSONObject
 	 *            to interpret.
 	 */
-	private User(JSONObject json) {
+	public User(JSONObject json) {
 
 		user_id = Utils.jsonReadString(json, "id");
 		phone_number = Utils.jsonReadString(json, "phone_number");

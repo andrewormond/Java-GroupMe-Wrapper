@@ -54,7 +54,7 @@ public class Group {
 		}
 	}
 
-	private Group(JSONObject json) {
+	public Group(JSONObject json) {
 		group_id = json.getString("id");
 		name = json.getString("name");
 		type = json.getString("type");

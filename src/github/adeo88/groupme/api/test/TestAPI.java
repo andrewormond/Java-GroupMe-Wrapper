@@ -21,6 +21,7 @@ import github.adeo88.groupme.api.Member;
 import github.adeo88.groupme.api.Message;
 import github.adeo88.groupme.api.User;
 import github.adeo88.groupme.api.Utils;
+import github.adeo88.groupme.bots.BotManager;
 
 public class TestAPI {
 
@@ -80,22 +81,31 @@ public class TestAPI {
 
 			api = new GroupMeAPI(loadKey("token.txt"));
 			api.debugEnabled = false;
-
-			GroupMeAPI testAPI = new GroupMeAPI(loadKey("token2.txt"));
-			testAPI.debugEnabled = true;
-
+			
 			try {
 				String groupID = "41685931"; // Jerry test groupme
 				String userID = "55871106"; // Testy
-				// String groupID = "40814221"; // summer squad
-				String botID = "23d4bc9f075ae54ad8efeda2c3";
+				
+				String botID = "1b2b3184300861dd5ed266e7a0";
 
 				Group group = Group.show(groupID, api);
 				System.out.println(group);
 				
-				group.changeOwner(User.Me(api).user_id, testAPI);
+				BotManager manager = new BotManager(botID, 9511, api, new EchoBotListener());
+				manager.isDebug = true;
 				
-
+				Thread manThread = new Thread(manager);
+				manThread.start();
+				
+				Thread.sleep(1000);
+				for(int i = 0; i < 1; i++) {
+					group.createMessage("Test: "+i, new Random().nextLong()+"", null, api);
+					Thread.sleep(1500);
+				}
+				
+				Thread.sleep(1500);
+				manager.stop();
+				
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

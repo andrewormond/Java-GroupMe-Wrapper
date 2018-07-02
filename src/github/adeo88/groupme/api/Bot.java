@@ -15,7 +15,7 @@ public class Bot {
 	public String callback_url;
 	public boolean dm_notification;
 
-	private Bot(JSONObject json) {
+	public Bot(JSONObject json) {
 		this.bot_id = json.getString("bot_id");
 		this.group_id = json.getString("group_id");
 		this.name = json.getString("name");
@@ -41,7 +41,6 @@ public class Bot {
 		}
 		payload.put("bot", json);
 		JSONObject response = api.sendPostRequest("/bots", payload.toString(), true);
-		System.out.println("response: " + response);
 		return new Bot(response.getJSONObject("response").getJSONObject("bot"));
 	}
 
@@ -81,7 +80,6 @@ public class Bot {
 
 	public static Bot[] index(GroupMeAPI api) throws GroupMeException {
 		JSONObject response = api.sendGetRequest("/bots", true);
-		System.out.println(response);
 		return Bot.interpretBots(response.getJSONArray("response"));
 	}
 
