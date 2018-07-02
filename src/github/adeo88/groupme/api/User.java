@@ -55,8 +55,8 @@ public class User {
 	/**
 	 * Constructs the User object from a JSONObject.
 	 * 
-	 * @param JSONObject
-	 *            to interpret.
+	 * @param json
+	 *            JSONObject to interpret.
 	 */
 	public User(JSONObject json) {
 

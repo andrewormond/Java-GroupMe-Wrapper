@@ -21,7 +21,7 @@ import github.adeo88.groupme.api.Utils;
  * @version 0.1
  * @since 12-26-2017
  */
-public class Handler implements Runnable {
+class Handler implements Runnable {
 
 	private static int ID_CNT = 1;
 	private Socket socket;

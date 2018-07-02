@@ -87,6 +87,9 @@ public class TestAPI {
 				String userID = "55871106"; // Testy
 				
 				String botID = loadKey("token2.txt");
+				
+				Group[] groups = Group.indexGroups(api);
+				
 
 				Group group = Group.show(groupID, api);
 				System.out.println(group);
