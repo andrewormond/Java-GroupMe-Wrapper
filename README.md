@@ -15,6 +15,16 @@ String token = "your applicationToken"
 GroupMeAPI api = new GroupMeAPI(token);
 ```
 
+##### Get Current Groups
+```java
+Group[] groups = Group.indexGroups(api);
+```
+
+##### Get Specific Group
+```java
+Group group = Group.show("Group_id", api);
+```
+
 ##### Simple Echo Bot
 Uses the BotManager service to quote all messages it recieves in the group
 ```java
