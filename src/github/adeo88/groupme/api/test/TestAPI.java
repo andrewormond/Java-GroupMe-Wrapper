@@ -86,7 +86,7 @@ public class TestAPI {
 				String groupID = "41685931"; // Jerry test groupme
 				String userID = "55871106"; // Testy
 				
-				String botID = "1b2b3184300861dd5ed266e7a0";
+				String botID = loadKey("token2.txt");
 
 				Group group = Group.show(groupID, api);
 				System.out.println(group);
