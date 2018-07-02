@@ -8,14 +8,17 @@ Trello Link: https://trello.com/b/uh7LSr93
 
 ## Examples
 
+##### Create API Object
+```java
+String token = "your applicationToken"
+GroupMeAPI api = new GroupMeAPI(token);
+```
+
 ##### Simple Echo Bot
 Uses the BotManager service to quote all messages it recieves in the group
 ```java
-String token = "your applicationToken"
 String botID = "Your Bot ID";
 int port = 2000;
-GroupMeAPI api = new GroupMeAPI(token);
-
 BotManager manager = new BotManager(botID, port, api, new BotListener() {
   Bot bot;
   @Override
