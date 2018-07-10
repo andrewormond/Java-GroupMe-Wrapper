@@ -79,8 +79,11 @@ public class User {
 	 *             When there is a JSON error or Networking error.
 	 */
 	public static User Me(GroupMeAPI api) throws GroupMeException {
-		JSONObject json = api.sendGetRequest("/users/me", true).getJSONObject("response");
-		return new User(json);
+		if (api.me == null) {
+			JSONObject json = api.sendGetRequest("/users/me", true).getJSONObject("response");
+			api.me = new User(json);
+		}
+		return api.me;
 	}
 
 	/**

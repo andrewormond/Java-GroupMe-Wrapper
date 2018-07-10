@@ -199,6 +199,60 @@ public class Utils {
 
 	}
 
+	public static JSONArray sendPostRequestToArray(String url, HashMap<String, String> parameters, String body)
+			throws GroupMeException {
+		try {
+			int responseCode = -1;
+			int i = 0;
+			if (parameters != null) {
+				for (String key : parameters.keySet()) {
+					if (i++ == 0) {
+						url += "?";
+					} else {
+						url += "&";
+					}
+					url += key + "=" + parameters.get(key);
+				}
+			}
+
+			URL obj = new URL(url);
+
+			HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
+
+			// add request header
+			con.setRequestMethod("POST");
+			con.setRequestProperty("Content-Type", "application/json");
+
+			if (body != null) {
+				// Send post request
+				con.setDoOutput(true);
+				DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+				wr.writeBytes(body);
+				wr.flush();
+				wr.close();
+			}
+
+			responseCode = con.getResponseCode();
+
+			if (responseCode < 200 || responseCode >= 300) {
+				throw new GroupMeException("Post Request Error: Code " + responseCode, responseCode);
+			}
+
+			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			String inputLine;
+			StringBuffer response = new StringBuffer();
+
+			while ((inputLine = in.readLine()) != null) {
+				response.append(inputLine);
+			}
+			in.close();
+			return new JSONArray(response.toString());
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new GroupMeException(e.getMessage(), 500);
+		}
+	}
+
 	public static JSONObject sendPostRequest(String url, HashMap<String, String> parameters, String body)
 			throws GroupMeException {
 
@@ -264,6 +318,7 @@ public class Utils {
 
 			return jobj;
 		} catch (IOException e) {
+			e.printStackTrace();
 			throw new GroupMeException(e.getMessage(), 500);
 		}
 	}

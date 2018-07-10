@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.Scanner;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import github.adeo88.groupme.api.Block;
@@ -80,36 +81,16 @@ public class TestAPI {
 		try {
 
 			api = new GroupMeAPI(loadKey("token.txt"));
-			api.debugEnabled = false;
+			api.debugEnabled = true;
 			
 			try {
 				String groupID = "41685931"; // Jerry test groupme
-				String userID = "55871106"; // Testy
-				
-				String botID = loadKey("token2.txt");
-				
-				Group[] groups = Group.indexGroups(api);
-				
-
-				Group group = Group.show(groupID, api);
-				System.out.println(group);
-				
-				BotManager manager = new BotManager(botID, 9511, api, new EchoBotListener());
-				manager.isDebug = true;
-				
-				Thread manThread = new Thread(manager);
-				manThread.start();
-				
-				Thread.sleep(1000);
-				for(int i = 0; i < 3; i++) {
-					group.createMessage("Test: "+i, new Random().nextLong()+"", null, api);
-					Thread.sleep(1000);
-				}
-				
-				Thread.sleep(1500);
-				manager.stop();
-				manThread.join();
-				
+				api.pushApiHandshake();
+				System.out.println(api.clientID);
+				Group group =Group.show(groupID, api);
+				System.out.printf("Group: %s\n", group.toString());
+				api.pushGroupSubscribe(group);
+				api.pollData();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
