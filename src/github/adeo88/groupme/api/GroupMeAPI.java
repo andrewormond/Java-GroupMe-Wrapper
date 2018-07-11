@@ -1,10 +1,13 @@
 package github.adeo88.groupme.api;
 
+import java.net.SocketException;
 import java.util.Date;
 import java.util.HashMap;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import github.adeo88.groupme.api.polling.ChannelListener;
 
 public class GroupMeAPI implements ChannelListener {
 
@@ -14,6 +17,8 @@ public class GroupMeAPI implements ChannelListener {
 	private int pushID = 0;
 	public User me;
 	private HashMap<String, ChannelListener> channels = new HashMap<>();
+	private volatile boolean polling = false;
+	private volatile long pollRate = 500;
 
 	public void setToken(String token) {
 		this.token = token;
@@ -154,16 +159,12 @@ public class GroupMeAPI implements ChannelListener {
 		JSONArray body = new JSONArray();
 		body.put(payload);
 		JSONArray response = Utils.sendPostRequestToArray("https://push.groupme.com/faye", null, body.toString());
-		System.out.printf("Response: %s\n", response);
 		for (int i = 0; i < response.length(); i++) {
 			JSONObject data = response.getJSONObject(i);
 			ChannelListener listener = this.channels.get(data.getString("channel"));
 			if (listener != null) {
-				if (data.has("data")) {
-					listener.onChannelData(data.getJSONObject("data"));
-				} else {
-					listener.onChannelData(data);
-				}
+				listener.onChannelData(data);
+
 			} else {
 				System.out.printf("Unkown: [%s] : ", data.getString("channel"));
 				System.out.println(data);
@@ -182,4 +183,37 @@ public class GroupMeAPI implements ChannelListener {
 			throw new GroupMeException("Push API failed: \"" + data.getString("error") + "\"", 500);
 		}
 	}
+
+	public void startPolling() {
+		this.polling = true;
+		final GroupMeAPI thisAPI = this;
+		Thread t = new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				final GroupMeAPI api = thisAPI;
+				while (api.polling) {
+					try {
+						try {
+						api.pollData();
+						}catch(Exception e){
+							System.err.println(e.getMessage());
+						}
+						Thread.sleep(api.pollRate);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+						return;
+					}
+				}
+
+			}
+
+		});
+		t.start();
+	}
+
+	public void stopPolling() {
+		this.polling = false;
+	}
+
 }

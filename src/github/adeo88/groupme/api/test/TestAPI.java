@@ -82,15 +82,15 @@ public class TestAPI {
 
 			api = new GroupMeAPI(loadKey("token.txt"));
 			api.debugEnabled = true;
-			
+
 			try {
 				String groupID = "41685931"; // Jerry test groupme
 				api.pushApiHandshake();
-				System.out.println(api.clientID);
-				Group group =Group.show(groupID, api);
-				System.out.printf("Group: %s\n", group.toString());
-				api.pushGroupSubscribe(group);
-				api.pollData();
+				Group group = Group.show(groupID, api);
+				new DebugGroupListener(group, api);
+				new DebugUserListener(api);
+				api.startPolling();
+
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

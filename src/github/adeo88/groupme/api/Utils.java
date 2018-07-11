@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -22,6 +23,7 @@ import org.json.JSONObject;
 public class Utils {
 
 	public static final Pattern JSONPattern = Pattern.compile("(\\{.*\\})");
+	public static final SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd' @ 'HH:mm:ss");
 
 	private Utils() {
 	}
