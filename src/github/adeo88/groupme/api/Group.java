@@ -65,20 +65,35 @@ public class Group {
 		created_at = json.getLong("created_at");
 		updated_at = json.getLong("updated_at");
 
-		setMembers(json.getJSONArray("members"));
+		setMembers(json.optJSONArray("members"));
 
 		share_url = Utils.jsonReadString(json, "share_url");
 	}
+	
+	public static Group[] indexGroups(GroupMeAPI api, Optional<Integer> page, Optional<Integer> per_page, Optional<Boolean> omitMemberships) throws GroupMeException {
 
-	public static Group[] indexGroups(GroupMeAPI api) throws GroupMeException {
-		JSONArray groupsJSON = api.sendGetRequest("/groups", true).getJSONArray("response");
+		HashMap<String, String> parameters = new HashMap<>();
+		if(page.isPresent()) {
+			parameters.put("page", page.get().toString());
+		}
+		if(per_page.isPresent()) {
+			parameters.put("per_page", per_page.get().toString());
+		}
+		if(omitMemberships.isPresent() && omitMemberships.get()) {
+			parameters.put("omit", "memberships");
+		}
+		
+		JSONArray groupsJSON = api.sendGetRequest("/groups", parameters, true).getJSONArray("response");
 		Group[] list = new Group[groupsJSON.length()];
 		for (int i = 0; i < groupsJSON.length(); i++) {
 			JSONObject groupObj = groupsJSON.getJSONObject(i);
 			list[i] = new Group(groupObj);
 		}
 		return list;
+	}
 
+	public static Group[] indexGroups(GroupMeAPI api) throws GroupMeException {
+		return Group.indexGroups(api, Optional.empty(), Optional.empty(), Optional.empty());
 	}
 
 	public static Group[] former(GroupMeAPI api) throws GroupMeException {
@@ -227,7 +242,7 @@ public class Group {
 
 	@Override
 	public String toString() {
-		return "Group [group_id = " + group_id + ", name = \"" + name + "\"]";
+		return "Group [group_id = " + group_id + ", "+this.members.length+" members, name = \"" + name + "\"]";
 	}
 
 	public static Group create(String name, String description, String image_url, boolean share, GroupMeAPI api)

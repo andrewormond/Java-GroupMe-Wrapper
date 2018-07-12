@@ -80,6 +80,9 @@ public class Member {
 	 * @return A Member Array
 	 */
 	public static Member[] interpretMembers(JSONArray membersJSON) {
+		if(membersJSON == null) {
+			return new Member[0];
+		}
 		Member[] members = new Member[membersJSON.length()];
 		for (int i = 0; i < membersJSON.length(); i++) {
 			members[i] = new Member(membersJSON.getJSONObject(i));

@@ -69,6 +69,20 @@ public class TestAPI {
 		}
 		printSep(System.out);
 	}
+	
+
+	public static void dumpJSON(JSONObject obj) {
+		System.out.println("{");
+		for(String key : obj.keySet()) {
+			if(obj.optJSONObject(key) != null) {
+				System.out.print(key+" : ");
+				dumpJSON(obj.getJSONObject(key));
+			}else {
+				System.out.println(key+" : "+obj.get(key).toString());
+			}
+		}
+		System.out.println("}");
+	}
 
 	private TestAPI() {
 	}
@@ -85,11 +99,7 @@ public class TestAPI {
 
 			try {
 				String groupID = "41685931"; // Jerry test groupme
-				api.pushApiHandshake();
-				Group group = Group.show(groupID, api);
-				new DebugGroupListener(group, api);
-				new DebugUserListener(api);
-				api.startPolling();
+				printArray(Group.indexGroups(api, Optional.empty(), Optional.of(50), Optional.of(true)));
 
 			} catch (Exception e) {
 				// TODO Auto-generated catch block

@@ -51,6 +51,8 @@ public class User {
 	 * Flag indicating whether this User is in sms mode.
 	 */
 	public boolean sms;
+	
+	public String name;
 
 	/**
 	 * Constructs the User object from a JSONObject.
@@ -59,13 +61,14 @@ public class User {
 	 *            JSONObject to interpret.
 	 */
 	public User(JSONObject json) {
-
+		System.out.println(json);
 		user_id = Utils.jsonReadString(json, "id");
 		phone_number = Utils.jsonReadString(json, "phone_number");
 		image_url = Utils.jsonReadString(json, "image_url");
 		created_at = json.getLong("created_at");
 		updated_at = json.getLong("updated_at");
 		email = Utils.jsonReadString(json, "email");
+		name = Utils.jsonReadString(json, "name");
 		sms = json.getBoolean("sms");
 	}
 
@@ -134,7 +137,7 @@ public class User {
 	 */
 	@Override
 	public String toString() {
-		return "User [user_id=" + user_id + ", phone_number=" + phone_number + ", image_url=" + image_url
+		return "User [name=" + name+", user_id=" + user_id + ", phone_number=" + phone_number + ", image_url=" + image_url
 				+ ", created_at=" + created_at + ", updated_at=" + updated_at + ", email=" + email + ", sms=" + sms
 				+ "]";
 	}
