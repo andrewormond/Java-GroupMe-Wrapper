@@ -11,6 +11,7 @@ import java.util.Scanner;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import github.adeo88.groupme.api.Auth;
 import github.adeo88.groupme.api.Block;
 import github.adeo88.groupme.api.Bot;
 import github.adeo88.groupme.api.DirectMessage;
@@ -90,26 +91,18 @@ public class TestAPI {
 	public static void main(String[] args) {
 		printSep("Starting API Test", System.out);
 		System.out.println();
+		final String authURL = "https://oauth.groupme.com/oauth/authorize?client_id=wQu3v27Sf7EKKTvfXdP1kjZ0yDBX97UGuZ2QGHJ2ukBpSx0S";
 
-		GroupMeAPI api;
+		Auth auth = new Auth(authURL, new DesktopAuthenticator());
+		auth.run();
+		GroupMeAPI api = new GroupMeAPI(auth.token);
 		try {
-
-			api = new GroupMeAPI(loadKey("token.txt"));
-			api.debugEnabled = true;
-
-			try {
-				String groupID = "41685931"; // Jerry test groupme
-				printArray(Group.indexGroups(api, Optional.empty(), Optional.of(50), Optional.of(true)));
-
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-		} catch (IOException e) {
+			System.out.println(User.Me(api));
+		} catch (GroupMeException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
-			System.exit(-1);
 		}
+		
 
 		System.out.println();
 		printSep("Ending API Test", System.out);

@@ -7,5 +7,6 @@
 			<attribute name="javadoc_location" value="jar:platform:/resource/Java-GroupMe-Wrapper/libs/json-20180130-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="libs/http-20070405.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
