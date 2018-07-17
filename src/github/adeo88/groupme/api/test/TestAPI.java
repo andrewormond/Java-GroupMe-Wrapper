@@ -23,6 +23,7 @@ import github.adeo88.groupme.api.Member;
 import github.adeo88.groupme.api.Message;
 import github.adeo88.groupme.api.User;
 import github.adeo88.groupme.api.Utils;
+import github.adeo88.groupme.api.polling.ChannelListener;
 import github.adeo88.groupme.bots.BotManager;
 
 public class TestAPI {
@@ -72,17 +73,24 @@ public class TestAPI {
 	}
 	
 
-	public static void dumpJSON(JSONObject obj) {
-		System.out.println("{");
+	public static void dumpJSON(int indent, JSONObject obj) {
+		String indentString = "";
+		for(int i = 0; i < indent; i++) {
+			indentString += "\t";
+		}
+		System.out.println(indentString+"{");
 		for(String key : obj.keySet()) {
 			if(obj.optJSONObject(key) != null) {
-				System.out.print(key+" : ");
-				dumpJSON(obj.getJSONObject(key));
+				System.out.print(indentString+key+" : ");
+				dumpJSON(indent+1, obj.getJSONObject(key));
 			}else {
-				System.out.println(key+" : "+obj.get(key).toString());
+				System.out.println(indentString+key+" : "+obj.get(key).toString());
 			}
 		}
-		System.out.println("}");
+		System.out.println(indentString+"}");
+	}
+	public static void dumpJSON(JSONObject obj) {
+		dumpJSON(0, obj);
 	}
 
 	private TestAPI() {
@@ -93,12 +101,34 @@ public class TestAPI {
 		System.out.println();
 		final String authURL = "https://oauth.groupme.com/oauth/authorize?client_id=wQu3v27Sf7EKKTvfXdP1kjZ0yDBX97UGuZ2QGHJ2ukBpSx0S";
 
-		Auth auth = new Auth(authURL, new DesktopAuthenticator());
-		auth.run();
-		GroupMeAPI api = new GroupMeAPI(auth.token);
+		
+		
 		try {
-			System.out.println(User.Me(api));
-		} catch (GroupMeException e) {
+			GroupMeAPI api = new GroupMeAPI(loadKey("token.txt"));
+			api.pushApiHandshake();
+			api.pushUserSubscribe();
+			api.registerListener(new ChannelListener() {
+
+				@Override
+				public String getChannelName() {
+					try {
+						return "/user/"+User.Me(api).user_id;
+					} catch (GroupMeException e) {
+						e.printStackTrace();
+					}
+					return "";
+				}
+
+				@Override
+				public void onChannelData(JSONObject data) throws GroupMeException {
+					System.out.println("OnChannelData");
+					dumpJSON(data);
+					
+				}
+				
+			});
+			api.pollData();
+		} catch (GroupMeException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

@@ -28,9 +28,10 @@ public class GroupMeAPI implements ChannelListener {
 		channels.put(listener.getChannelName(), listener);
 	}
 
-	@SuppressWarnings("unlikely-arg-type")
 	public void unregisterListener(ChannelListener listener) {
-		channels.remove(listener).getChannelName();
+		if(channels.containsKey(listener.getChannelName())) {
+		channels.remove(listener.getChannelName());
+		}
 	}
 
 	public GroupMeAPI(String token) {
