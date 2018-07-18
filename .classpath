@@ -8,5 +8,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="libs/http-20070405.jar"/>
+	<classpathentry kind="lib" path="libs/weberknecht.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

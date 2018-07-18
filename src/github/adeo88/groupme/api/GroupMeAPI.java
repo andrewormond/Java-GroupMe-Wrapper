@@ -1,6 +1,5 @@
 package github.adeo88.groupme.api;
 
-import java.net.SocketException;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -18,7 +17,6 @@ public class GroupMeAPI implements ChannelListener {
 	public User me;
 	private HashMap<String, ChannelListener> channels = new HashMap<>();
 	private volatile boolean polling = false;
-	private volatile long pollRate = 500;
 
 	public void setToken(String token) {
 		this.token = token;
@@ -89,11 +87,14 @@ public class GroupMeAPI implements ChannelListener {
 		JSONArray payload = new JSONArray();
 		payload.put(handshake);
 		JSONObject response = Utils.sendPostRequest("https://push.groupme.com/faye", null, payload.toString());
+		System.out.printf("Response: %s\n",response);
 		this.clientID = response.getString("clientId");
 		if (!response.getBoolean("successful")) {
 			throw new GroupMeException("Push API Handshake failed", 500);
 		}
 	}
+	
+	/*
 
 	public void pushUserSubscribe() throws GroupMeException {
 		if (clientID == null) {
@@ -147,7 +148,7 @@ public class GroupMeAPI implements ChannelListener {
 		}
 	}
 
-	public void pollData() throws GroupMeException {
+	public void longPollData() throws GroupMeException {
 		if (clientID == null) {
 			throw new GroupMeException("No clientId found. pushApiHandshake must successfully complete first.", 400);
 		}
@@ -155,7 +156,7 @@ public class GroupMeAPI implements ChannelListener {
 		JSONObject payload = new JSONObject();
 		payload.put("channel", "/meta/connect");
 		payload.put("clientId", this.clientID);
-		payload.put("connectionType", "long-polling");
+		payload.put("connectionType", "websocket");
 		payload.put("id", ++this.pushID);
 		JSONArray body = new JSONArray();
 		body.put(payload);
@@ -171,7 +172,7 @@ public class GroupMeAPI implements ChannelListener {
 				System.out.println(data);
 			}
 		}
-	}
+	}*/
 
 	@Override
 	public String getChannelName() {
@@ -185,6 +186,7 @@ public class GroupMeAPI implements ChannelListener {
 		}
 	}
 
+	/*
 	public void startPolling() {
 		this.polling = true;
 		final GroupMeAPI thisAPI = this;
@@ -215,6 +217,6 @@ public class GroupMeAPI implements ChannelListener {
 
 	public void stopPolling() {
 		this.polling = false;
-	}
+	}*/
 
 }

@@ -101,33 +101,9 @@ public class TestAPI {
 		System.out.println();
 		final String authURL = "https://oauth.groupme.com/oauth/authorize?client_id=wQu3v27Sf7EKKTvfXdP1kjZ0yDBX97UGuZ2QGHJ2ukBpSx0S";
 
-		
-		
 		try {
 			GroupMeAPI api = new GroupMeAPI(loadKey("token.txt"));
 			api.pushApiHandshake();
-			api.pushUserSubscribe();
-			api.registerListener(new ChannelListener() {
-
-				@Override
-				public String getChannelName() {
-					try {
-						return "/user/"+User.Me(api).user_id;
-					} catch (GroupMeException e) {
-						e.printStackTrace();
-					}
-					return "";
-				}
-
-				@Override
-				public void onChannelData(JSONObject data) throws GroupMeException {
-					System.out.println("OnChannelData");
-					dumpJSON(data);
-					
-				}
-				
-			});
-			api.pollData();
 		} catch (GroupMeException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
