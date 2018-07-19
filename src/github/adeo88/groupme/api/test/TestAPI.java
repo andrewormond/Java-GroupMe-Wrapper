@@ -4,27 +4,16 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.Optional;
-import java.util.Random;
-import java.util.Scanner;
+import java.net.URI;
+import java.net.URISyntaxException;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
-import github.adeo88.groupme.api.Auth;
-import github.adeo88.groupme.api.Block;
-import github.adeo88.groupme.api.Bot;
-import github.adeo88.groupme.api.DirectMessage;
-import github.adeo88.groupme.api.Group;
-import github.adeo88.groupme.api.Group.TimePeriod;
+import de.roderick.weberknecht.WebSocket;
+import de.roderick.weberknecht.WebSocketEventHandler;
+import de.roderick.weberknecht.WebSocketMessage;
 import github.adeo88.groupme.api.GroupMeAPI;
 import github.adeo88.groupme.api.GroupMeException;
-import github.adeo88.groupme.api.Member;
-import github.adeo88.groupme.api.Message;
-import github.adeo88.groupme.api.User;
-import github.adeo88.groupme.api.Utils;
-import github.adeo88.groupme.api.polling.ChannelListener;
-import github.adeo88.groupme.bots.BotManager;
 
 public class TestAPI {
 
@@ -107,7 +96,7 @@ public class TestAPI {
 		} catch (GroupMeException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		} 
 		
 
 		System.out.println();

@@ -18,7 +18,7 @@ public abstract class GroupListener implements ChannelListener {
 	public GroupListener(Group group, GroupMeAPI api) throws GroupMeException {
 		this.api = api;
 		this.group = group;
-		api.pushGroupSubscribe(group);
+		//api.pushGroupSubscribe(group);
 		api.registerListener(this);
 	}
 

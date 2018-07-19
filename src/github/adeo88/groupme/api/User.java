@@ -61,7 +61,6 @@ public class User {
 	 *            JSONObject to interpret.
 	 */
 	public User(JSONObject json) {
-		System.out.println(json);
 		user_id = Utils.jsonReadString(json, "id");
 		phone_number = Utils.jsonReadString(json, "phone_number");
 		image_url = Utils.jsonReadString(json, "image_url");
