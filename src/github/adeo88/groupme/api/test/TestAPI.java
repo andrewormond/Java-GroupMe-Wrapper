@@ -6,14 +6,18 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Random;
 
 import org.json.JSONObject;
 
 import de.roderick.weberknecht.WebSocket;
 import de.roderick.weberknecht.WebSocketEventHandler;
 import de.roderick.weberknecht.WebSocketMessage;
+import github.adeo88.groupme.api.Group;
 import github.adeo88.groupme.api.GroupMeAPI;
 import github.adeo88.groupme.api.GroupMeException;
+import github.adeo88.groupme.api.events.MessageEvent;
+import github.adeo88.groupme.api.events.PushEventListener;
 
 public class TestAPI {
 
@@ -60,24 +64,24 @@ public class TestAPI {
 		}
 		printSep(System.out);
 	}
-	
 
 	public static void dumpJSON(int indent, JSONObject obj) {
 		String indentString = "";
-		for(int i = 0; i < indent; i++) {
+		for (int i = 0; i < indent; i++) {
 			indentString += "\t";
 		}
-		System.out.println(indentString+"{");
-		for(String key : obj.keySet()) {
-			if(obj.optJSONObject(key) != null) {
-				System.out.print(indentString+key+" : ");
-				dumpJSON(indent+1, obj.getJSONObject(key));
-			}else {
-				System.out.println(indentString+key+" : "+obj.get(key).toString());
+		System.out.println(indentString + "{");
+		for (String key : obj.keySet()) {
+			if (obj.optJSONObject(key) != null) {
+				System.out.print(indentString + key + " : ");
+				dumpJSON(indent + 1, obj.getJSONObject(key));
+			} else {
+				System.out.println(indentString + key + " : " + obj.get(key).toString());
 			}
 		}
-		System.out.println(indentString+"}");
+		System.out.println(indentString + "}");
 	}
+
 	public static void dumpJSON(JSONObject obj) {
 		dumpJSON(0, obj);
 	}
@@ -92,15 +96,27 @@ public class TestAPI {
 
 		try {
 			GroupMeAPI api = new GroupMeAPI(loadKey("token.txt"));
-			api.pushApiHandshake();
+			String groupId = "41685931";
+			Group group = Group.show(groupId, api);
+			api.pushApiHandshake(new PushEventListener() {
+
+				@Override
+				public void onMessage(MessageEvent event) {
+					System.out.printf("onMessage: %s\n", event.toString());
+				}
+
+			});
+
 			api.pushUserSubscribe();
-			Thread.sleep(8000);
+			api.pollData();
+			Thread.sleep(1000);
+			group.createMessage("Test: " + new Random().nextInt(), "" + new Random().nextLong(), null, api);
+			Thread.sleep(60 * 1000);
 			api.closeWebSocket();
 		} catch (GroupMeException | IOException | InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} 
-		
+		}
 
 		System.out.println();
 		printSep("Ending API Test", System.out);
