@@ -16,6 +16,8 @@ import de.roderick.weberknecht.WebSocketMessage;
 import github.adeo88.groupme.api.Group;
 import github.adeo88.groupme.api.GroupMeAPI;
 import github.adeo88.groupme.api.GroupMeException;
+import github.adeo88.groupme.api.GroupMePushAPI;
+import github.adeo88.groupme.api.User;
 import github.adeo88.groupme.api.events.MessageEvent;
 import github.adeo88.groupme.api.events.PushEventListener;
 
@@ -98,7 +100,8 @@ public class TestAPI {
 			GroupMeAPI api = new GroupMeAPI(loadKey("token.txt"));
 			String groupId = "41685931";
 			Group group = Group.show(groupId, api);
-			api.pushApiHandshake(new PushEventListener() {
+			GroupMePushAPI push = new GroupMePushAPI(api.token, User.Me(api).user_id);
+			push.pushApiHandshake(new PushEventListener() {
 
 				@Override
 				public void onMessage(MessageEvent event) {
@@ -107,12 +110,12 @@ public class TestAPI {
 
 			});
 
-			api.pushUserSubscribe();
-			api.pollData();
+			push.pushUserSubscribe();
+			push.pollData();
 			Thread.sleep(1000);
 			group.createMessage("Test: " + new Random().nextInt(), "" + new Random().nextLong(), null, api);
 			Thread.sleep(60 * 1000);
-			api.closeWebSocket();
+			push.closeWebSocket();
 		} catch (GroupMeException | IOException | InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
