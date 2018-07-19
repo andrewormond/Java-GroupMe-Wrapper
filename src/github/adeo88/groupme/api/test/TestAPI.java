@@ -93,7 +93,10 @@ public class TestAPI {
 		try {
 			GroupMeAPI api = new GroupMeAPI(loadKey("token.txt"));
 			api.pushApiHandshake();
-		} catch (GroupMeException | IOException e) {
+			api.pushUserSubscribe();
+			Thread.sleep(8000);
+			api.closeWebSocket();
+		} catch (GroupMeException | IOException | InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 

@@ -12,9 +12,8 @@ import org.json.JSONObject;
 import de.roderick.weberknecht.WebSocket;
 import de.roderick.weberknecht.WebSocketEventHandler;
 import de.roderick.weberknecht.WebSocketMessage;
-import github.adeo88.groupme.api.polling.ChannelListener;
 
-public class GroupMeAPI implements ChannelListener, WebSocketEventHandler {
+public class GroupMeAPI implements WebSocketEventHandler {
 
 	String token;
 	public boolean debugEnabled = false;
@@ -23,26 +22,13 @@ public class GroupMeAPI implements ChannelListener, WebSocketEventHandler {
 	public User me;
 
 	private WebSocket webSocket;
-	private HashMap<String, ChannelListener> channels = new HashMap<>();
-	private volatile boolean polling = false;
 
 	public void setToken(String token) {
 		this.token = token;
 	}
 
-	public void registerListener(ChannelListener listener) {
-		channels.put(listener.getChannelName(), listener);
-	}
-
-	public void unregisterListener(ChannelListener listener) {
-		if (channels.containsKey(listener.getChannelName())) {
-			channels.remove(listener.getChannelName());
-		}
-	}
-
 	public GroupMeAPI(String token) {
 		setToken(token);
-		this.registerListener(this);
 	}
 
 	@Override
@@ -99,7 +85,7 @@ public class GroupMeAPI implements ChannelListener, WebSocketEventHandler {
 		JSONObject handshake = new JSONObject();
 		handshake.put("channel", "/meta/handshake");
 		handshake.put("version", 1.0d);
-		handshake.put("supportedConnectionTypes", new JSONArray().put("long-polling"));
+		handshake.put("supportedConnectionTypes", new JSONArray().put("websocket"));
 		handshake.put("id", ++this.pushID);
 		JSONArray payload = new JSONArray();
 		payload.put(handshake);
@@ -110,40 +96,24 @@ public class GroupMeAPI implements ChannelListener, WebSocketEventHandler {
 
 		webSocket.send(payload.toString());
 		
-		final int checkTime = 10;
-		final int totalTime = 5*1000;
-		int timeAccumulated = 0;
-		
-		while(recievedMessage == null && timeAccumulated < totalTime) {
-			timeAccumulated += checkTime;
-			try {
-				Thread.sleep(checkTime);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-				recievedMessage = null;
-				return;
-			}
-		}
+		waitForMessage(5000, 5);
 		
 		if(recievedMessage != null) {
-			System.out.println("Recieved Message: "+recievedMessage);
+			JSONObject response = new JSONArray(recievedMessage).getJSONObject(0);
+			this.clientID = response.getString("clientId");
+			System.out.printf("ClientId: %s\n", this.clientID);
+			if (!response.getBoolean("successful")) {
+				throw new GroupMeException("Push API Handshake failed", 500);
+			}
 		}else {
 			throw new GroupMeException("Could not connect to server", 500);
 		}
 		recievedMessage = null;
 		
-
-		/*
-		JSONObject response = Utils.sendPostRequest("https://push.groupme.com/faye", null, payload.toString());
-		System.out.printf("Response: %s\n", response);
-		this.clientID = response.getString("clientId");
-		if (!response.getBoolean("successful")) {
-			throw new GroupMeException("Push API Handshake failed", 500);
-		}*/
 	}
 
 	public void pushUserSubscribe() throws GroupMeException {
-		if (clientID == null) {
+		if (clientID == null || webSocket == null) {
 			throw new GroupMeException("No clientId found. pushApiHandshake must successfully complete first.", 400);
 		}
 
@@ -160,10 +130,20 @@ public class GroupMeAPI implements ChannelListener, WebSocketEventHandler {
 
 		JSONArray body = new JSONArray();
 		body.put(payload);
-		JSONObject response = Utils.sendPostRequest("https://push.groupme.com/faye", null, body.toString());
-		if (!response.getBoolean("successful")) {
-			throw new GroupMeException("Push API failed: \"" + response.getString("error") + "\"", 500);
+		
+		webSocket.send(body.toString());
+		
+		waitForMessage(5000, 5);
+		
+		if(recievedMessage != null) {
+			JSONObject response = new JSONArray(recievedMessage).getJSONObject(0);
+			if (!response.getBoolean("successful")) {
+				throw new GroupMeException("Push API failed: \"" + response.getString("error") + "\"", 500);
+			}
+		}else {
+			throw new GroupMeException("Could not connect to server", 500);
 		}
+		recievedMessage = null;
 	}
 
 	/*
@@ -208,28 +188,39 @@ public class GroupMeAPI implements ChannelListener, WebSocketEventHandler {
 	 */
 
 	@Override
-	public String getChannelName() {
-		return "/meta/connect";
-	}
-
-	@Override
-	public void onChannelData(JSONObject data) throws GroupMeException {
-		if (!data.getBoolean("successful")) {
-			throw new GroupMeException("Push API failed: \"" + data.getString("error") + "\"", 500);
-		}
-	}
-
-	@Override
 	public void onClose() {
 		webSocket = null;
-		
 	}
 
 	@Override
-	public void onError(IOException arg0) {}
+	public void onError(IOException e) {
+		e.printStackTrace();
+	}
 
 	@Override
-	public void onMessage(WebSocketMessage arg0) {}
+	public void onMessage(WebSocketMessage msg) {
+		recievedMessage = msg.getText();
+	}
+	
+	public void waitForMessage(int milliTimeout, int checkTime) {
+		int timeAccumulated = 0;
+		
+		while(recievedMessage == null && timeAccumulated < milliTimeout) {
+			timeAccumulated += checkTime;
+			try {
+				Thread.sleep(checkTime);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+				recievedMessage = null;
+				return;
+			}
+		}
+		System.out.printf("Waited %.3f seconds\n", timeAccumulated/1000f);
+	}
+	
+	public void waitForMessage(int milliTimeout) {
+		this.waitForMessage(milliTimeout, 10);
+	}
 
 	@Override
 	public void onOpen() {}
@@ -239,6 +230,12 @@ public class GroupMeAPI implements ChannelListener, WebSocketEventHandler {
 
 	@Override
 	public void onPong() {}
+	
+	public void closeWebSocket() {
+		if(webSocket != null) {
+			webSocket.close();
+		}
+	}
 
 	/*
 	 * public void startPolling() { this.polling = true; final GroupMeAPI thisAPI =
