@@ -10,11 +10,13 @@ public class MessageEvent {
 	public final String alert;
 	public final Date recievedAt;
 	public final Message message;
+	public final JSONObject messageJSON;
 
 	public MessageEvent(JSONObject data) {
 		alert = data.getString("alert");
 		recievedAt = new Date(data.getLong("received_at"));
-		message = new Message(data.getJSONObject("subject"));
+		messageJSON = data.getJSONObject("subject");
+		message = new Message(messageJSON);
 	}
 
 	@Override
