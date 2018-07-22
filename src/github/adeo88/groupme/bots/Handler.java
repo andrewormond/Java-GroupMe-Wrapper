@@ -6,11 +6,9 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.Socket;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.json.JSONObject;
 
-import github.adeo88.groupme.api.GroupMeAPI;
 import github.adeo88.groupme.api.Message;
 import github.adeo88.groupme.api.Utils;
 

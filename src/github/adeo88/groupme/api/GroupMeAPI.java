@@ -1,19 +1,8 @@
 package github.adeo88.groupme.api;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Date;
 import java.util.HashMap;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
-
-import de.roderick.weberknecht.WebSocket;
-import de.roderick.weberknecht.WebSocketEventHandler;
-import de.roderick.weberknecht.WebSocketMessage;
-import github.adeo88.groupme.api.events.MessageEvent;
-import github.adeo88.groupme.api.events.PushEventListener;
 
 public class GroupMeAPI  {
 

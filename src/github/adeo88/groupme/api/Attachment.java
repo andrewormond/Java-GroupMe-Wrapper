@@ -3,8 +3,6 @@ package github.adeo88.groupme.api;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import github.adeo88.groupme.api.Attachment.AttachmentType;
-
 public class Attachment {
 	public enum AttachmentType {
 		image, location, split, emoji, mentions, poll

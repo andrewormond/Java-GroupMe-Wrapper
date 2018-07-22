@@ -44,8 +44,6 @@ public class BotManager implements Runnable {
 		refreshBot(bot, api);
 	}
 
-	private BotManager() {}
-	
 	public BotManager(Bot bot, int port, BotListener listener) {
 		this.port = port;
 		this.listener = listener;

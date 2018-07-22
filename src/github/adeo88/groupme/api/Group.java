@@ -1,6 +1,5 @@
 package github.adeo88.groupme.api;
 
-import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -24,34 +23,13 @@ public class Group {
 	public long updated_at;
 	public Member[] members;
 	public String share_url;
-	String last_message_id;
-	String first_message_id;
-	long last_message_created_at;
-	public HashMap<String, Message> messages = new HashMap<>();
+	public String last_message_id;
+	public int messageCount;
+	public long last_message_created_at;
+	public JSONObject messagePreview;
 
 	public void setMembers(JSONArray membersJSON) {
 		members = Member.interpretMembers(membersJSON);
-	}
-
-	public void setMessages(JSONObject wrapper) {
-		int count = wrapper.getInt("count");
-		String message_id = wrapper.getString("last_message_id");
-		if (first_message_id == null) {
-			first_message_id = message_id;
-		}
-		if (this.last_message_id == null) {
-			this.last_message_id = first_message_id;
-		}
-		long message_time = wrapper.getLong("last_message_created_at");
-		if (message_time > this.last_message_created_at) {
-			last_message_id = message_id;
-		}
-	}
-
-	public void dumpMessages(PrintStream ps) {
-		for (String key : this.messages.keySet()) {
-			ps.println(messages.get(key));
-		}
 	}
 
 	public Group(JSONObject json) {
@@ -66,10 +44,20 @@ public class Group {
 		updated_at = json.getLong("updated_at");
 
 		setMembers(json.optJSONArray("members"));
+		
+		setMessagePreview(json.getJSONObject("messages"));
 
 		share_url = Utils.jsonReadString(json, "share_url");
+
 	}
 	
+	private void setMessagePreview(JSONObject messages) {
+		this.last_message_created_at = messages.getLong("last_message_created_at");
+		this.last_message_id = messages.getString("last_message_id");
+		this.messageCount = messages.getInt("count"); 
+		this.messagePreview = messages.getJSONObject("preview");
+	}
+
 	public static Group[] indexGroups(GroupMeAPI api, Optional<Integer> page, Optional<Integer> per_page, Optional<Boolean> omitMemberships) throws GroupMeException {
 
 		HashMap<String, String> parameters = new HashMap<>();
@@ -115,7 +103,6 @@ public class Group {
 	public void refresh(GroupMeAPI api) throws GroupMeException {
 		JSONObject json = api.sendGetRequest("/groups/" + group_id, true).getJSONObject("response");
 		setMembers(json.getJSONArray("members"));
-		setMessages(json.getJSONObject("messages"));
 	}
 
 	public Member getMember(String user_id) {
