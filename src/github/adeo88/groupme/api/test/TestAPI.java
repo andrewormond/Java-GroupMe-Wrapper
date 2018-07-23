@@ -5,12 +5,15 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Date;
+import java.util.Random;
 
 import org.json.JSONObject;
 
 import github.adeo88.groupme.api.Group;
 import github.adeo88.groupme.api.GroupMeAPI;
 import github.adeo88.groupme.api.GroupMeException;
+import github.adeo88.groupme.api.SMSMode;
+import github.adeo88.groupme.api.User;
 
 public class TestAPI {
 
@@ -86,15 +89,19 @@ public class TestAPI {
 		printSep("Starting API Test", System.out);
 		System.out.println();
 		try {
-			GroupMeAPI api = new GroupMeAPI(loadKey("token.txt"));
-
-			Group[] groups = Group.indexGroups(api);
-			for(Group g : groups) {
-				System.out.println(new Date(g.last_message_created_at));
-				TestAPI.dumpJSON(g.messagePreview);
-			}
+			GroupMeAPI api = new GroupMeAPI(loadKey("token2.txt"));
+			String groupId = "41685931";
+			Group group =Group.show(groupId, api);
 			
-		} catch (GroupMeException | IOException e) {
+			while(true) {
+				String i = new Date().toInstant().toString();
+				System.out.println("Sending: "+i);
+				group.createMessage(i, i, null, api);
+				Thread.sleep(60*60*1000);
+			}
+			//System.out.println("Uploaded: "+api.uploadImage("./cat.jpg"));
+			
+		} catch (GroupMeException | IOException | InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

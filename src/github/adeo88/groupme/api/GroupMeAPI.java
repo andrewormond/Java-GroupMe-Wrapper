@@ -4,14 +4,12 @@ import java.util.HashMap;
 
 import org.json.JSONObject;
 
-public class GroupMeAPI  {
+public class GroupMeAPI {
 
 	public boolean debugEnabled = false;
 	public User me;
 
 	public String token; // TODO: Hide access to token
-
-
 
 	public void setToken(String token) {
 		this.token = token;
@@ -61,7 +59,5 @@ public class GroupMeAPI  {
 		return Utils.sendPostRequest(url, parameters, body);
 	}
 
-
-	
 
 }
